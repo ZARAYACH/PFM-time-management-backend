@@ -1,0 +1,13 @@
+spring.application.name=time-management-backend
+
+server.port=8080
+spring.datasource.url=jdbc:mysql://localhost:3306/pfm_time_management?createDatabaseIfNotExist=true
+spring.datasource.username=root
+spring.datasource.password=root
+logging.level.com.axlab.oauth=debug
+spring.datasource.driverClassName=com.mysql.cj.jdbc.Driver
+spring.jpa.generate-ddl=true
+spring.jpa.hibernate.ddl-auto=create
+spring.jpa.show-sql=true
+spring.jpa.defer-datasource-initialization=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
