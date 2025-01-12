@@ -1,4 +1,4 @@
-package com.multiplatform.time_management_backend.security;
+package com.multiplatform.time_management_backend.security.jwt;
 
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWK;

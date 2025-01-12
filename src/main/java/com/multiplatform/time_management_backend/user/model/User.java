@@ -16,11 +16,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Entity
+@Table(name = "`user`")
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class User implements UserDetails {
 
@@ -44,7 +47,11 @@ public abstract class User implements UserDetails {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    public User(String email, String password, String firstName, String lastName, LocalDate birthDate, Role role) {
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Session> sessions;
+
+    public User(Long id,String email, String password, String firstName, String lastName, LocalDate birthDate, Role role) {
+        this.id = id;
         this.email = email;
         this.password = password;
         this.firstName = firstName;

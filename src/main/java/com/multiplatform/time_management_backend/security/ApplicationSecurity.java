@@ -26,7 +26,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class ApplicationSecurity {
 
-    private final JwtRequestFilter jwtRequestFilter;
+    private final CustomAuthenticationRequestFilter jwtRequestFilter;
     private final UserDetailsService userDetailsService;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
@@ -37,7 +37,7 @@ public class ApplicationSecurity {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/users","/api/v1/token").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users","/api/v1/tokens").permitAll()
                         .requestMatchers(HttpMethod.GET, "/.well-known/jwks.json").permitAll()
                         .requestMatchers("/api/v1/api-docs/**", "/swagger-ui.html","/swagger-ui/*").permitAll()
                         .anyRequest().authenticated())

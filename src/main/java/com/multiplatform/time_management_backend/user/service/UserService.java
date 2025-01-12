@@ -32,6 +32,9 @@ public class UserService {
     public User findById(long id) throws NotFoundException {
         return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
     }
+    public User findByEmail(String email) throws NotFoundException {
+        return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User with email " + email + " not found"));
+    }
 
     public User create(UserDto.PostUserDto postUserDto) throws BadArgumentException {
         validateUserDto(postUserDto);
@@ -53,7 +56,7 @@ public class UserService {
     private void validateUserDto(UserDto.PostUserDto postUserDto) throws BadArgumentException {
         try {
             validateAuthCredentials(postUserDto.email(), postUserDto.password());
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | BadArgumentException e) {
             throw new BadArgumentException(e);
         }
     }
@@ -64,7 +67,7 @@ public class UserService {
             Assert.isTrue(emailValidator.isValid(email), "Email is not valid");
             Assert.isTrue(!userRepository.existsByEmail(email), "Email Already Exists");
             Assert.isTrue(passwordValidator.validate(new PasswordData(password)).isValid(), "Password should least be 8 character with one uppercase, one special and one digit characters");
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             throw new BadArgumentException(e);
         }
     }
