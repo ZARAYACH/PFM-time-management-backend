@@ -70,7 +70,7 @@ public class RefreshTokenService implements TokenService {
         Cookie refreshTokenCookie = new Cookie("refresh_token", token);
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(isSecure);
-        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setPath("/api/v1/token");
         refreshTokenCookie.setMaxAge(Math.toIntExact(getExpirationTimeInSeconds()));
         return refreshTokenCookie;
     }

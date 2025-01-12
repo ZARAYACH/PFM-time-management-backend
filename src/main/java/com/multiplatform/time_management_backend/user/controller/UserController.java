@@ -5,6 +5,8 @@ import com.multiplatform.time_management_backend.exeption.NotFoundException;
 import com.multiplatform.time_management_backend.user.UserMapper;
 import com.multiplatform.time_management_backend.user.model.dto.UserDto;
 import com.multiplatform.time_management_backend.user.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

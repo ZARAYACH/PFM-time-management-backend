@@ -24,13 +24,15 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        log.debug(authException.getMessage());
+        ExceptionDto exceptionDto = ExceptionDto.builder()
+                .message(authException.getMessage())
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .statusDescription(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+                .build();
+        log.debug("Exception error id : {{}} : {}", exceptionDto.getErrorId(), authException.getMessage());
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(objectMapper.writeValueAsString(ExceptionDto.builder()
-                .message(authException.getMessage())
-                .status(HttpStatus.UNAUTHORIZED)
-                .build()));
+        response.getWriter().write(objectMapper.writeValueAsString(exceptionDto));
     }
 }

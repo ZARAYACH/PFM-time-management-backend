@@ -10,6 +10,7 @@ import java.util.Optional;
 public interface JwtService {
     String validateTokenAndGetUsername(String token, TokenService tokenService);
     String generateToken(UserDetails userDetails, TokenService tokenService);
+    //in production is secure should always be true
     Cookie createTokenCookie(String token, boolean isSecure, TokenService tokenService) ;
     String extractAccessTokenFromRequest(HttpServletRequest request);
 }

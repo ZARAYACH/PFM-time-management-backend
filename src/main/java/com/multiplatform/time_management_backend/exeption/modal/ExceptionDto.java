@@ -17,7 +17,8 @@ public class ExceptionDto {
 
     private final LocalDateTime timestamp = LocalDateTime.now();
     private final String message;
-    private final HttpStatus status;
+    private final Integer status;
+    private final String statusDescription;
     private final String errorId = RandomStringUtils.random(10, 0, 0, true, true, null, Random.from(RandomGenerator.getDefault()));
 
 }

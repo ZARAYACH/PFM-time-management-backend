@@ -63,7 +63,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         Map<String, String> tokens = new HashMap<>();
 
         tokens.put("access_token", accessToken);
-        tokens.put("refresh_token", refreshToken);
         response.setContentType(APPLICATION_JSON_VALUE);
 
         response.addCookie(jwtService.createTokenCookie(accessToken, request.isSecure(), accessTokenService));

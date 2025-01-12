@@ -23,7 +23,8 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     public ResponseEntity<ExceptionDto> handleNotFoundException(Exception ex) {
         ExceptionDto exceptionDto = ExceptionDto.builder()
                 .message(ex.getMessage())
-                .status(HttpStatus.NOT_FOUND)
+                .status(HttpStatus.NOT_FOUND.value())
+                .statusDescription(HttpStatus.NOT_FOUND.getReasonPhrase())
                 .build();
         log.debug("Exception error id : {{}} : {}", exceptionDto.getErrorId(), ex.getMessage());
         return new ResponseEntity<>(exceptionDto, HttpStatus.NOT_FOUND);
@@ -34,7 +35,8 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     public ResponseEntity<ExceptionDto> handleBadRequestExceptions(Exception ex) {
         ExceptionDto exceptionDto = ExceptionDto.builder()
                 .message(ex.getMessage())
-                .status(HttpStatus.BAD_REQUEST)
+                .status(HttpStatus.BAD_REQUEST.value())
+                .statusDescription(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .build();
         log.debug("Exception error id : {{}} : {}", exceptionDto.getErrorId(), ex.getMessage(), ex);
         return new ResponseEntity<>(exceptionDto, HttpStatus.BAD_REQUEST);
@@ -45,7 +47,8 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     public ResponseEntity<ExceptionDto> handleUnauthorizedException(Exception ex) {
         ExceptionDto exceptionDto = ExceptionDto.builder()
                 .message(ex.getMessage())
-                .status(HttpStatus.FORBIDDEN)
+                .status(HttpStatus.FORBIDDEN.value())
+                .statusDescription(HttpStatus.FORBIDDEN.getReasonPhrase())
                 .build();
         log.debug("Exception error id : {{}} : {}", exceptionDto.getErrorId(), ex.getMessage(), ex);
         return new ResponseEntity<>(exceptionDto, HttpStatus.FORBIDDEN);
@@ -57,7 +60,8 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     public ResponseEntity<ExceptionDto> handleUnauthenticatedException(Exception ex) {
         ExceptionDto exceptionDto = ExceptionDto.builder()
                 .message(ex.getMessage())
-                .status(HttpStatus.UNAUTHORIZED)
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .statusDescription(HttpStatus.UNAUTHORIZED.getReasonPhrase())
                 .build();
         log.debug("Exception error id : {{}} : {}", exceptionDto.getErrorId(), ex.getMessage(), ex);
         return new ResponseEntity<>(exceptionDto, HttpStatus.UNAUTHORIZED);
@@ -68,7 +72,8 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     public ResponseEntity<ExceptionDto> handleEntityAlreadyExists(Exception ex) {
         ExceptionDto exceptionDto = ExceptionDto.builder()
                 .message(ex.getMessage())
-                .status(HttpStatus.CONFLICT)
+                .status(HttpStatus.CONFLICT.value())
+                .statusDescription(HttpStatus.CONFLICT.getReasonPhrase())
                 .build();
         log.debug("Exception error id : {{}} : {}", exceptionDto.getErrorId(), ex.getMessage(), ex);
         return new ResponseEntity<>(exceptionDto, HttpStatus.CONFLICT);
@@ -80,7 +85,8 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         ex.printStackTrace();
         ExceptionDto exceptionDto = ExceptionDto.builder()
                 .message("INTERNAL_SERVER_ERROR")
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .statusDescription(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
                 .build();
         log.error("E&rror id: {}", exceptionDto.getErrorId(), ex);
         return new ResponseEntity<>(exceptionDto, HttpStatus.INTERNAL_SERVER_ERROR);
