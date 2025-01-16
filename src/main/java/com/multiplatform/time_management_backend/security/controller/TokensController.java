@@ -6,6 +6,7 @@ import com.multiplatform.time_management_backend.exeption.BadArgumentException;
 import com.multiplatform.time_management_backend.exeption.NotFoundException;
 import com.multiplatform.time_management_backend.security.jwt.JwtService;
 import com.multiplatform.time_management_backend.user.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/tokens")
 @RequiredArgsConstructor
+@Tag(name = "Tokens")
 public class TokensController {
 
     private final JwtService jwtService;
