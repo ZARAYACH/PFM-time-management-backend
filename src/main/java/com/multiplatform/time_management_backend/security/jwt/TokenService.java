@@ -14,6 +14,7 @@ interface TokenService {
     String buildToken(UserDetails userDetails, String sessionId) throws BadArgumentException;
 
     int getExpirationTimeInSeconds();
+
     Cookie buildTokenCookie(String token, boolean isSecure);
 
     String extractToken(HttpServletRequest request);

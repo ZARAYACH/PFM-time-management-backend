@@ -5,8 +5,6 @@ import com.multiplatform.time_management_backend.exeption.NotFoundException;
 import com.multiplatform.time_management_backend.user.UserMapper;
 import com.multiplatform.time_management_backend.user.model.dto.UserDto;
 import com.multiplatform.time_management_backend.user.service.UserService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +21,7 @@ public class UserController {
     private final UserMapper userMapper;
 
     @GetMapping
-    private List<UserDto> list(){
+    private List<UserDto> list() {
         return userMapper.toUser(userService.list());
     }
 
@@ -33,7 +31,7 @@ public class UserController {
     }
 
     @PostMapping
-    private UserDto create( @RequestBody UserDto.PostUserDto userDto) throws BadArgumentException {
+    private UserDto create(@RequestBody UserDto.PostUserDto userDto) throws BadArgumentException {
         return userMapper.toUserDto(userService.create(userDto));
     }
 }

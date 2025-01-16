@@ -1,8 +1,6 @@
 package com.multiplatform.time_management_backend.security.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;

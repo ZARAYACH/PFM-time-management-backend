@@ -50,7 +50,7 @@ public abstract class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Session> sessions;
 
-    public User(Long id,String email, String password, String firstName, String lastName, LocalDate birthDate, Role role) {
+    public User(Long id, String email, String password, String firstName, String lastName, LocalDate birthDate, Role role) {
         this.id = id;
         this.email = email;
         this.password = password;

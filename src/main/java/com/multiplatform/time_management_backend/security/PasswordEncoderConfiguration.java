@@ -16,12 +16,12 @@ public class PasswordEncoderConfiguration {
     }
 
     @Bean
-    public PasswordValidator passwordValidator(){
+    public PasswordValidator passwordValidator() {
         return new PasswordValidator(Arrays.asList(
                 new LengthRule(8, 255),
                 new CharacterRule(EnglishCharacterData.UpperCase, 1),
-                new CharacterRule(EnglishCharacterData.Digit,1),
-                new CharacterRule(EnglishCharacterData.Special,1),
+                new CharacterRule(EnglishCharacterData.Digit, 1),
+                new CharacterRule(EnglishCharacterData.Special, 1),
                 new WhitespaceRule()));
     }
 }

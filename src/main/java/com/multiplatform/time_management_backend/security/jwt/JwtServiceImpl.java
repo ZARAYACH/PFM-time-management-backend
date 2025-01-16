@@ -1,11 +1,9 @@
 package com.multiplatform.time_management_backend.security.jwt;
 
-import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.impl.JWTParser;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.multiplatform.time_management_backend.exeption.AuthenticationInvalidTokenException;
 import com.multiplatform.time_management_backend.exeption.BadArgumentException;
-import com.multiplatform.time_management_backend.exeption.TokenValidationException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -13,10 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
-import java.util.Objects;
 
 @Service
 @Slf4j

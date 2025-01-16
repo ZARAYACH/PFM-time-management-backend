@@ -1,6 +1,5 @@
 package com.multiplatform.time_management_backend.user.service;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.multiplatform.time_management_backend.exeption.BadArgumentException;
 import com.multiplatform.time_management_backend.exeption.NotFoundException;
 import com.multiplatform.time_management_backend.user.model.Student;
@@ -32,6 +31,7 @@ public class UserService {
     public User findById(long id) throws NotFoundException {
         return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
     }
+
     public User findByEmail(String email) throws NotFoundException {
         return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User with email " + email + " not found"));
     }

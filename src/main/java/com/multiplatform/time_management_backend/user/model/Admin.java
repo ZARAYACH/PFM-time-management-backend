@@ -1,7 +1,6 @@
 package com.multiplatform.time_management_backend.user.model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.PrimaryKeyJoinColumn;
 import lombok.NoArgsConstructor;
 
 @Entity
