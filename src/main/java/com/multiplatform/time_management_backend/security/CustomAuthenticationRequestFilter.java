@@ -40,7 +40,6 @@ public class CustomAuthenticationRequestFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } catch (Exception e) {
-            log.debug(e.getMessage());
             filterChain.doFilter(request, response);
         }
     }

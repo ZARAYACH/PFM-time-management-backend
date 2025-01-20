@@ -8,9 +8,10 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 @Service
 @Slf4j
@@ -19,36 +20,23 @@ public class JwtServiceImpl implements JwtService {
 
     private final AccessTokenService accessTokenService;
     private final RefreshTokenService refreshTokenService;
-    private final JWTParser jwtParser = new JWTParser();
 
     @Override
     public DecodedJWT validateAccessToken(String token) {
         try {
-            DecodedJWT decodedJWT = refreshTokenService.validateToken(token);
-            validateSessionIdClaim(decodedJWT.getClaim("sessionId").asString());
-            return decodedJWT;
+            return accessTokenService.validateToken(token);
         } catch (Exception e) {
             throw new AuthenticationInvalidTokenException("Invalid access token", e);
         }
     }
 
+
     @Override
     public DecodedJWT validateRefreshToken(String token) {
         try {
-            DecodedJWT decodedJWT = refreshTokenService.validateToken(token);
-            validateSessionIdClaim(decodedJWT.getClaim("sessionId").asString());
-            return decodedJWT;
+            return refreshTokenService.validateToken(token);
         } catch (Exception e) {
             throw new AuthenticationInvalidTokenException("Invalid refresh token", e);
-        }
-    }
-
-    private void validateSessionIdClaim(String sessionId) throws BadArgumentException {
-        try {
-            Assert.hasText(sessionId, "sessionId cannot be empty");
-            //TODO : add validation to see if session was blacklisted
-        } catch (Exception e) {
-            throw new BadArgumentException("Invalid sessionId", e);
         }
     }
 
@@ -64,13 +52,13 @@ public class JwtServiceImpl implements JwtService {
 
 
     @Override
-    public Cookie createAccessTokenCookie(String token, boolean isSecure) {
-        return accessTokenService.buildTokenCookie(token, isSecure);
+    public Cookie createAccessTokenCookie(String token, boolean isSecure, String domain) {
+        return accessTokenService.buildTokenCookie(token, isSecure, domain);
     }
 
     @Override
-    public Cookie createRefreshTokenCookie(String token, boolean isSecure) {
-        return refreshTokenService.buildTokenCookie(token, isSecure);
+    public Cookie createRefreshTokenCookie(String token, boolean isSecure, String domain) {
+        return refreshTokenService.buildTokenCookie(token, isSecure, domain);
     }
 
     @Override
@@ -83,5 +71,13 @@ public class JwtServiceImpl implements JwtService {
         return refreshTokenService.extractToken(request);
     }
 
+    @Override
+    public void blackListRefreshToken(String jti) {
+        refreshTokenService.blackListToken(jti);
+    }
 
+    @Override
+    public void blackListAccessToken(String jti) {
+        accessTokenService.blackListToken(jti);
+    }
 }

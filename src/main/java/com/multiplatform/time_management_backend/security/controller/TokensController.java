@@ -32,13 +32,19 @@ public class TokensController {
         DecodedJWT decodedRefreshToken = jwtService.validateRefreshToken(refreshToken);
         UserDetails userDetails = userService.findByEmail(decodedRefreshToken.getSubject());
         String token = null;
+        String newRefreshToken = null;
+
         try {
-            token = jwtService.generateAccessToken(userDetails, decodedRefreshToken.getClaim("sessionId").asString());
-            //TODO: Blacklist this refresh token using redis and generate another one
+            token = jwtService.generateAccessToken(userDetails, decodedRefreshToken.getClaim(JwtService.SESSION_ID_CLAIM_NAME).asString());
+            jwtService.blackListRefreshToken(decodedRefreshToken.getId());
+            newRefreshToken = jwtService.generateRefreshToken(userDetails, decodedRefreshToken.getClaim(JwtService.SESSION_ID_CLAIM_NAME).asString());
+            //TODO: Implement a sliding window for session when refresh token is used
         } catch (BadArgumentException e) {
             throw new AuthenticationServiceUnavailableException(e);
         }
-        response.addCookie(jwtService.createAccessTokenCookie(token, request.isSecure()));
+        response.addCookie(jwtService.createAccessTokenCookie(token, request.isSecure(), request.getServerName()));
+        response.addCookie(jwtService.createRefreshTokenCookie(newRefreshToken,request.isSecure(), request.getServerName()));
+
         return Map.of("access_token", token);
     }
 }

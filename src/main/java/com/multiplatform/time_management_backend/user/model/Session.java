@@ -7,19 +7,20 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class Session {
+public class Session  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne
     private User user;
 
     @CreationTimestamp
@@ -31,7 +32,9 @@ public class Session {
     private String userAgent;
     private LocalDateTime expiredAt;
 
-    public Session(User user) {
+    public Session(User user, String userAgent, LocalDateTime expiredAt) {
         this.user = user;
+        this.userAgent = userAgent;
+        this.expiredAt = expiredAt;
     }
 }

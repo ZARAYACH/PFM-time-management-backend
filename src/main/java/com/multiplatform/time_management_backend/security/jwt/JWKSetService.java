@@ -6,21 +6,22 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
 
-@Configuration
+@Service
 @RequiredArgsConstructor
-public class JWkSConfiguration {
+public class JWKSetService {
 
     private final RSAKeyPairConfigurations rsaKeyPairConfigurations;
 
-    @Bean
-    public JWKSet jwkSet() throws NoSuchAlgorithmException {
-        return new JWKSet(rsaKeyPairConfigurations.getKeyPairs().stream().map(keyPairWithId -> (JWK) new RSAKey.Builder((RSAPublicKey) keyPairWithId.keyPair().getPublic())
+    @Cacheable(value = "jwk_sets")
+    public JWKSet jwkSet() {
+        return new JWKSet(rsaKeyPairConfigurations.getKeyPairs().stream()
+                .map(keyPairWithId -> (JWK) new RSAKey.Builder((RSAPublicKey) keyPairWithId.keyPair().getPublic())
                 .keyUse(KeyUse.SIGNATURE)
                 .algorithm(JWSAlgorithm.RS256)
                 .keyID(keyPairWithId.keyId()).build()).toList());

@@ -3,9 +3,11 @@ package com.multiplatform.time_management_backend.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.multiplatform.time_management_backend.exeption.BadArgumentException;
 import com.multiplatform.time_management_backend.security.jwt.JwtService;
+import com.multiplatform.time_management_backend.security.service.SessionService;
 import com.multiplatform.time_management_backend.user.model.Session;
 import com.multiplatform.time_management_backend.user.model.User;
 import com.multiplatform.time_management_backend.user.repository.SessionRepository;
+import com.multiplatform.time_management_backend.user.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,12 +36,16 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final SessionRepository sessionRepository;
+    private final UserService userService;
+    private final SessionService sessionService;
 
-    public CustomAuthenticationFilter(AuthenticationManager authenticationManager, JwtService jwtService, SessionRepository sessionRepository) {
+    public CustomAuthenticationFilter(AuthenticationManager authenticationManager, JwtService jwtService, SessionRepository sessionRepository, UserService userService, SessionService sessionService) {
         super(authenticationManager);
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.sessionRepository = sessionRepository;
+        this.sessionService = sessionService;
+        this.userService = userService;
     }
 
     @Override
@@ -61,16 +67,14 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
         User user = (User) authentication.getPrincipal();
 
-        Session session = new Session(user);
-        sessionRepository.save(session);
+        Session session = sessionService.create(user, request.getHeader(HttpHeaders.USER_AGENT));
 
-        String accessToken = null;
-        String refreshToken = null;
+        String accessToken;
+        String refreshToken;
 
         try {
             accessToken = jwtService.generateAccessToken(user, session.getId());
             refreshToken = jwtService.generateRefreshToken(user, session.getId());
-
         } catch (BadArgumentException e) {
             throw new AuthenticationServiceException(e.getMessage());
         }
@@ -80,8 +84,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         tokens.put("access_token", accessToken);
         response.setContentType(APPLICATION_JSON_VALUE);
 
-        response.addCookie(jwtService.createAccessTokenCookie(accessToken, request.isSecure()));
-        response.addCookie(jwtService.createRefreshTokenCookie(refreshToken, request.isSecure()));
+        response.addCookie(jwtService.createAccessTokenCookie(accessToken, request.isSecure(), request.getServerName()));
+        response.addCookie(jwtService.createRefreshTokenCookie(refreshToken, request.isSecure(), request.getServerName()));
 
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
     }

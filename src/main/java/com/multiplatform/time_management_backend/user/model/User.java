@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -47,8 +48,8 @@ public abstract class User implements UserDetails {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Session> sessions;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Session> sessions = new ArrayList<>();
 
     public User(Long id, String email, String password, String firstName, String lastName, LocalDate birthDate, Role role) {
         this.id = id;
@@ -88,6 +89,10 @@ public abstract class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
+    }
+
+    public void addSession(Session session) {
+        this.sessions.add(session);
     }
 
     @FieldNameConstants(onlyExplicitlyIncluded = true)

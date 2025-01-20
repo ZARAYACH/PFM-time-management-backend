@@ -26,17 +26,27 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {
-        return new OpenAPI().paths(new Paths().addPathItem("/login", new PathItem()
-                .post(new Operation()
-                        .summary("User Login")
-                        .description("Authenticate a user and retrieve an access token")
-                        .addTagsItem("Authentication")
-                        .operationId("login")
-                        .addSecurityItem(new SecurityRequirement().addList("basicAuth"))
-                        .responses(new ApiResponses()
-                                .addApiResponse("200", new ApiResponse()
-                                        .description("Successfully logged in and received access token"))
-                                .addApiResponse("401", new ApiResponse()
-                                        .description("Invalid credentials"))))));
+        return new OpenAPI().paths(new Paths()
+                .addPathItem("/login", new PathItem()
+                        .post(new Operation()
+                                .summary("User Login")
+                                .description("Authenticate a user and retrieve an access token")
+                                .addTagsItem("Authentication")
+                                .operationId("login")
+                                .addSecurityItem(new SecurityRequirement().addList("basicAuth"))
+                                .responses(new ApiResponses()
+                                        .addApiResponse("200", new ApiResponse()
+                                                .description("Successfully logged in and received access token"))
+                                        .addApiResponse("401", new ApiResponse()
+                                                .description("Invalid credentials")))))
+                .addPathItem("/logout", new PathItem()
+                        .post(new Operation()
+                                .summary("User Logout")
+                                .description("Logout the logged in user")
+                                .addTagsItem("Authentication")
+                                .operationId("logout")
+                                .responses(new ApiResponses()
+                                        .addApiResponse("200", new ApiResponse()
+                                                .description("Successfully logged out"))))));
     }
 }

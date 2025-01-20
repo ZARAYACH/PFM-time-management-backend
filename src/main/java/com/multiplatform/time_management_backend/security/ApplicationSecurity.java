@@ -1,5 +1,7 @@
 package com.multiplatform.time_management_backend.security;
 
+import com.multiplatform.time_management_backend.security.jwt.JwtService;
+import com.multiplatform.time_management_backend.security.service.CustomLogoutHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +32,7 @@ public class ApplicationSecurity {
     private final UserDetailsService userDetailsService;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-
+    private final CustomLogoutHandler  customLogoutHandler;
     //TODO : implement endpoint to renew access oken using refresh token and also add session so we can add logout
     @Bean
     public SecurityFilterChain configure(final HttpSecurity http) throws Exception {
@@ -47,6 +49,11 @@ public class ApplicationSecurity {
                         exceptionableConfigure.accessDeniedHandler(customAccessDeniedHandler)
                                 .authenticationEntryPoint(customAuthenticationEntryPoint))
                 .addFilterBefore(jwtRequestFilter, CustomAuthenticationFilter.class)
+                .logout(httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer
+                        .logoutUrl("/logout")
+                        .addLogoutHandler(customLogoutHandler)
+                        .deleteCookies(JwtService.ACCESS_TOKEN_COOKIE_NAME,
+                                JwtService.REFRESH_TOKEN_COOKIE_NAME))
                 .build();
     }
 
