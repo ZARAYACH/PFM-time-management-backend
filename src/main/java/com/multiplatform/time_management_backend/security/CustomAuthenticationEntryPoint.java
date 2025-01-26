@@ -30,6 +30,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
                 .statusDescription(HttpStatus.UNAUTHORIZED.getReasonPhrase())
                 .build();
         log.debug("Exception error id : {{}} : {}", exceptionDto.getErrorId(), authException.getMessage());
+        authException.printStackTrace();
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");

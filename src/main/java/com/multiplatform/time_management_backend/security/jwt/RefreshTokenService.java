@@ -6,7 +6,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.multiplatform.time_management_backend.configuration.CustomRedisCacheConfigurations;
 import com.multiplatform.time_management_backend.exeption.*;
 import com.multiplatform.time_management_backend.security.service.SessionService;
-import com.multiplatform.time_management_backend.user.repository.SessionRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -39,17 +38,15 @@ class RefreshTokenService implements TokenService {
     private final Cache sessionCache;
     private final Cache refreshTokensCache;
     private final JwtConfigurationProperties jwtConfigurationProperties;
-    private final SessionRepository sessionRepository;
     private final SessionService sessionService;
 
-    public RefreshTokenService(RSAKeyPairConfigurations rsaKeyPairConfigurations, CacheManager cacheManager, JwtConfigurationProperties jwtConfigurationProperties, SessionRepository sessionRepository, SessionService sessionService) throws NoSuchAlgorithmException {
+    public RefreshTokenService(RSAKeyPairConfigurations rsaKeyPairConfigurations, CacheManager cacheManager, JwtConfigurationProperties jwtConfigurationProperties, SessionService sessionService) throws NoSuchAlgorithmException {
         this.jwtConfigurationProperties = jwtConfigurationProperties;
         this.algorithmWithId = AlgorithmWithId.fromKeyPair(rsaKeyPairConfigurations.generateRSAKeyPair());
         this.cacheManager = cacheManager;
         this.sessionCache = cacheManager.getCache(CustomRedisCacheConfigurations.SESSION_IDS_CACHE_NAME);
         this.refreshTokensCache = cacheManager.getCache(CustomRedisCacheConfigurations.REFRESH_JTI_CACHE_NAME);
         this.verifier = JWT.require(algorithmWithId.algorithm()).build();
-        this.sessionRepository = sessionRepository;
         this.sessionService = sessionService;
     }
 
@@ -71,13 +68,14 @@ class RefreshTokenService implements TokenService {
             Assert.hasText(decodedJWT.getSubject(), "Subject cannot be empty");
             Assert.isTrue(Objects.equals(decodedJWT.getClaim(TOKEN_TYPE_CLAIM_NAME).asString(), TOKEN_TYPE_REFRESH_NAME), "Invalid Token type ");
             Assert.hasText(decodedJWT.getClaim(SESSION_ID_CLAIM_NAME).asString(), "sessionId cannot be empty");
-            Assert.isTrue(validJTI(decodedJWT.getId()), "JTI can't be empty");
+            Assert.isTrue(validJTI(decodedJWT.getId()), "Token is Black listed.");
             Assert.isTrue(validSession(decodedJWT.getClaim(SESSION_ID_CLAIM_NAME).asString()), "Session expired");
         } catch (Exception e) {
             throw new BadArgumentException(e);
         }
     }
 
+    // To preserver the stateless nature of jwt's , the cache should be reachable if not we would divert to using the db to check for session validation
     private boolean validJTI(String id) {
         if (refreshTokensCache != null) {
             return refreshTokensCache.get(id) == null;

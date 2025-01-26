@@ -23,9 +23,9 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class CustomRedisCacheConfigurations implements CachingConfigurer {
 
-    public static final String SESSION_IDS_CACHE_NAME = "sessionIds";
-    public static final String REFRESH_JTI_CACHE_NAME = "refreshJtis";
-    public static final String ACCESS_JTI_CACHE_NAME = "accessJtis";
+    public static final String SESSION_IDS_CACHE_NAME = "sessionId";
+    public static final String REFRESH_JTI_CACHE_NAME = "refreshJti";
+    public static final String ACCESS_JTI_CACHE_NAME = "accessJti";
 
     private final CustomCacheErrorHandler customCacheErrorHandler;
     private final JwtConfigurationProperties jwtConfigurationProperties;

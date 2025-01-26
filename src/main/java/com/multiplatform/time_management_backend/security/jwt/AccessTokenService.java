@@ -3,10 +3,9 @@ package com.multiplatform.time_management_backend.security.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.multiplatform.time_management_backend.exeption.AuthenticationServiceUnavailableException;
-import com.multiplatform.time_management_backend.exeption.BadArgumentException;
-import com.multiplatform.time_management_backend.exeption.TokenValidationException;
-import com.multiplatform.time_management_backend.exeption.UnauthenticatedException;
+import com.multiplatform.time_management_backend.configuration.CustomRedisCacheConfigurations;
+import com.multiplatform.time_management_backend.exeption.*;
+import com.multiplatform.time_management_backend.security.service.SessionService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +19,8 @@ import org.springframework.util.Assert;
 
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -37,14 +38,18 @@ class AccessTokenService implements TokenService {
     private final JwtConfigurationProperties jwtConfigurationProperties;
     private final RedisCacheManager redisCacheManager;
     private final Cache sessionsCache;
+    private final Cache accessTokensCache;
+    private final SessionService sessionService;
 
     public AccessTokenService(RSAKeyPairConfigurations rsaKeyPairConfigurations, JwtConfigurationProperties jwtConfigurationProperties,
-                              RedisCacheManager redisCacheManager) throws NoSuchAlgorithmException {
+                              RedisCacheManager redisCacheManager, SessionService sessionService) throws NoSuchAlgorithmException {
         this.jwtConfigurationProperties = jwtConfigurationProperties;
         this.algorithmWithId = AlgorithmWithId.fromKeyPair(rsaKeyPairConfigurations.generateRSAKeyPair());
         this.redisCacheManager = redisCacheManager;
+        this.sessionService = sessionService;
         this.verifier = JWT.require(algorithmWithId.algorithm()).build();
-        sessionsCache = redisCacheManager.getCache("sessions");
+        this.sessionsCache = redisCacheManager.getCache(CustomRedisCacheConfigurations.SESSION_IDS_CACHE_NAME);
+        this.accessTokensCache = redisCacheManager.getCache(CustomRedisCacheConfigurations.ACCESS_JTI_CACHE_NAME);
     }
 
     @Override
@@ -60,13 +65,35 @@ class AccessTokenService implements TokenService {
 
     private void validateTokenClaims(DecodedJWT decodedJWT) throws BadArgumentException {
         try {
+            Assert.hasText(decodedJWT.getId(), "JTI can't be empty");
             Assert.hasText(decodedJWT.getSubject(), "Subject cannot be empty");
-            Assert.isTrue(Objects.equals(decodedJWT.getClaim(TOKEN_TYPE_CLAIM_NAME).asString(), TOKEN_TYPE_ACCESS_NAME), "Invalid Token type ");
             Assert.hasText(decodedJWT.getClaim(SESSION_ID_CLAIM_NAME).asString(), "sessionId cannot be empty");
+            Assert.isTrue(Objects.equals(decodedJWT.getClaim(TOKEN_TYPE_CLAIM_NAME).asString(), TOKEN_TYPE_ACCESS_NAME), "Invalid Token type ");
+            Assert.isTrue(validJTI(decodedJWT.getId()), "Token is black listed.");
+            Assert.isTrue(validSession(decodedJWT.getClaim(SESSION_ID_CLAIM_NAME).asString()), "Session expired");
         } catch (Exception e) {
             throw new BadArgumentException(e);
         }
     }
+
+    private boolean validJTI(String id) {
+        if (accessTokensCache != null) {
+            return accessTokensCache.get(id) == null;
+        }
+        return true;
+    }
+
+    private boolean validSession(String sessionId) {
+        if (sessionsCache != null) {
+            return sessionsCache.get(sessionId) == null;
+        }
+        try {
+            return sessionService.findById(sessionId).getExpiredAt().isAfter(LocalDateTime.now());
+        } catch (NotFoundException e) {
+            return false;
+        }
+    }
+
 
     @Override
     public String buildToken(UserDetails userDetails, String sessionId) throws AuthenticationServiceUnavailableException, BadArgumentException {
@@ -129,7 +156,9 @@ class AccessTokenService implements TokenService {
 
     @Override
     public void blackListToken(String jti) {
-        //TODO: to do later
+        if (accessTokensCache != null) {
+            accessTokensCache.put(jti, LocalDateTime.now().toEpochSecond(ZoneOffset.systemDefault().getRules().getOffset(Instant.now())));
+        }
     }
 }
 

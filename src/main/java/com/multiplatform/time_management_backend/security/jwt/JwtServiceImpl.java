@@ -1,17 +1,19 @@
 package com.multiplatform.time_management_backend.security.jwt;
 
-import com.auth0.jwt.impl.JWTParser;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.multiplatform.time_management_backend.exeption.AuthenticationInvalidTokenException;
 import com.multiplatform.time_management_backend.exeption.BadArgumentException;
+import com.multiplatform.time_management_backend.security.service.SessionService;
+import com.multiplatform.time_management_backend.user.model.Session;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.CacheManager;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @Slf4j
@@ -20,6 +22,7 @@ public class JwtServiceImpl implements JwtService {
 
     private final AccessTokenService accessTokenService;
     private final RefreshTokenService refreshTokenService;
+    private final SessionService sessionService;
 
     @Override
     public DecodedJWT validateAccessToken(String token) {
@@ -79,5 +82,18 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public void blackListAccessToken(String jti) {
         accessTokenService.blackListToken(jti);
+    }
+
+    @Override
+    public void extendSessionExpirationWindowAsync(@NotBlank String sessionId) {
+        CompletableFuture.runAsync(() -> {
+            try {
+                Session session = sessionService.findById(sessionId);
+                sessionService.extendSessionExpiration(session, refreshTokenService.getExpirationTimeInSeconds());
+            } catch (Exception e) {
+                log.error("Couldn't Extend session", e);
+            }
+        });
+
     }
 }

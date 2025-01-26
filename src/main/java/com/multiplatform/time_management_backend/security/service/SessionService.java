@@ -1,13 +1,16 @@
 package com.multiplatform.time_management_backend.security.service;
 
 import com.multiplatform.time_management_backend.configuration.CustomRedisCacheConfigurations;
+import com.multiplatform.time_management_backend.exeption.BadArgumentException;
 import com.multiplatform.time_management_backend.exeption.NotFoundException;
 import com.multiplatform.time_management_backend.user.model.Session;
 import com.multiplatform.time_management_backend.user.model.User;
 import com.multiplatform.time_management_backend.user.repository.SessionRepository;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -18,6 +21,7 @@ public class SessionService {
 
     private final SessionRepository sessionRepository;
     private final CacheManager cacheManager;
+    //TODO: implement a scheduled to check if the redis cache is reachable
     private Cache sessionCache;
 
     public SessionService(SessionRepository sessionRepository, CacheManager cacheManager) {
@@ -44,5 +48,17 @@ public class SessionService {
             sessionCache.put(session.getId(), session.getExpiredAt()
                     .toEpochSecond(ZoneOffset.systemDefault().getRules().getOffset(Instant.now())));
         }
+    }
+
+    public void extendSessionExpiration(@NotNull Session session, long seconds) throws BadArgumentException {
+        try {
+            Assert.notNull(session, "Session must not be null");
+            Assert.isTrue(session.getExpiredAt().isAfter(LocalDateTime.now()), "Session is expired");
+            Assert.isTrue(seconds >= 0, "You must provide a valid expiration");
+        } catch (Exception e) {
+            throw new BadArgumentException(e);
+        }
+        session.setExpiredAt(LocalDateTime.now().plusSeconds(seconds));
+        sessionRepository.save(session);
     }
 }

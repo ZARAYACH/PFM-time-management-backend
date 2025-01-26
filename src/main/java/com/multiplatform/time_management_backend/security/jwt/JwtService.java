@@ -3,6 +3,7 @@ package com.multiplatform.time_management_backend.security.jwt;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.multiplatform.time_management_backend.exeption.BadArgumentException;
+import com.multiplatform.time_management_backend.exeption.NotFoundException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,6 +39,8 @@ public interface JwtService {
     void blackListRefreshToken(String jti);
 
     void blackListAccessToken(String jti);
+
+    void extendSessionExpirationWindowAsync(String sessionId) throws NotFoundException;
 
 
 }
