@@ -1,6 +1,7 @@
 package com.multiplatform.time_management_backend.room.service;
 
 import com.multiplatform.time_management_backend.department.service.DepartmentRoomSharedService;
+import com.multiplatform.time_management_backend.exeption.BadArgumentException;
 import com.multiplatform.time_management_backend.exeption.NotFoundException;
 import com.multiplatform.time_management_backend.room.model.Room;
 import com.multiplatform.time_management_backend.room.model.dto.RoomDto;
@@ -31,13 +32,13 @@ public class RoomService {
     }
 
 
-    public Room create(RoomDto roomDto) throws NotFoundException {
+    public Room create(RoomDto roomDto) throws NotFoundException, BadArgumentException {
         Room room = departmentRoomSharedService.validateRoomDtoAndCreate(roomDto);
         return roomRepository.save(room);
     }
 
 
-    public Room modify(Room room, RoomDto roomDto) throws NotFoundException {
+    public Room modify(Room room, RoomDto roomDto) throws NotFoundException, BadArgumentException {
         Room newRoom = departmentRoomSharedService.validateRoomDtoAndCreate(roomDto);
         room.setName(newRoom.getName());
         room.setCapacity(newRoom.getCapacity());

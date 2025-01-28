@@ -4,6 +4,7 @@ import com.multiplatform.time_management_backend.department.DepartmentMapper;
 import com.multiplatform.time_management_backend.department.model.Department;
 import com.multiplatform.time_management_backend.department.model.dto.DepartmentDto;
 import com.multiplatform.time_management_backend.department.service.DepartmentService;
+import com.multiplatform.time_management_backend.exeption.BadArgumentException;
 import com.multiplatform.time_management_backend.exeption.NotFoundException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -38,12 +39,12 @@ public class DepartmentController {
     }
 
     @PostMapping
-    private DepartmentDto create(@RequestBody DepartmentDto departmentDto) throws NotFoundException {
+    private DepartmentDto create(@RequestBody DepartmentDto departmentDto) throws NotFoundException, BadArgumentException {
         return departmentMapper.toDepartmentDto(departmentService.create(departmentDto));
     }
 
     @PostMapping("/{id}")
-    private DepartmentDto modify(@PathVariable long id, @RequestBody DepartmentDto departmentDto) throws NotFoundException {
+    private DepartmentDto modify(@PathVariable long id, @RequestBody DepartmentDto departmentDto) throws NotFoundException, BadArgumentException {
         Department department = departmentService.findById(id);
         return departmentMapper.toDepartmentDto(departmentService.modify(department, departmentDto));
     }

@@ -1,5 +1,6 @@
 package com.multiplatform.time_management_backend.room.controller;
 
+import com.multiplatform.time_management_backend.exeption.BadArgumentException;
 import com.multiplatform.time_management_backend.exeption.NotFoundException;
 import com.multiplatform.time_management_backend.room.RoomMapper;
 import com.multiplatform.time_management_backend.room.model.Room;
@@ -39,12 +40,12 @@ public class RoomController {
     }
 
     @PostMapping
-    private RoomDto create(@RequestBody RoomDto roomDto) throws NotFoundException {
+    private RoomDto create(@RequestBody RoomDto roomDto) throws NotFoundException, BadArgumentException {
         return roomMapper.toRoomDto(roomService.create(roomDto));
     }
 
     @PostMapping("/{id}")
-    private RoomDto modify(@PathVariable long id, @RequestBody RoomDto roomDto) throws NotFoundException {
+    private RoomDto modify(@PathVariable long id, @RequestBody RoomDto roomDto) throws NotFoundException, BadArgumentException {
         Room room = roomService.findById(id);
         return roomMapper.toRoomDto(roomService.modify(room, roomDto));
     }
