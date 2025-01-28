@@ -11,6 +11,7 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    environment: prod
     env:
       DOCKER_IMAGE: PFM-time-management-backend:${{ github.event.inputs.releaseVersion }}
       DOCKER_IMAGE_TAG: iiadregistry.azurecr.io/PFM-time-management-backend:${{ github.event.inputs.releaseVersion }}
