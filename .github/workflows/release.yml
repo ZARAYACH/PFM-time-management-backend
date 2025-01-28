@@ -14,7 +14,7 @@ jobs:
     environment: prod
     env:
       DOCKER_IMAGE: pfm-time-management-backend:${{ github.event.inputs.releaseVersion }}
-      DOCKER_IMAGE_TAG: iiadregistry.azurecr.io/PFM-time-management-backend:${{ github.event.inputs.releaseVersion }}
+      DOCKER_IMAGE_TAG: iiadregistry.azurecr.io/pfm-time-management-backend:${{ github.event.inputs.releaseVersion }}
     steps:
       - name: Print entered versions
         run: |
