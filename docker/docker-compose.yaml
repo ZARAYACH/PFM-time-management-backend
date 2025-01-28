@@ -1,4 +1,10 @@
 services:
+
+  pfmBackend:
+    build:
+      dockerfile: Dockerfile
+      context: ./../
+
   redisCache:
     image: redis:6.2-alpine
     restart: always
