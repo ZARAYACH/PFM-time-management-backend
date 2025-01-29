@@ -1,12 +1,12 @@
-package com.multiplatform.time_management_backend.module.model;
+package com.multiplatform.time_management_backend.semester.modal;
 
-import com.multiplatform.time_management_backend.user.model.Teacher;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Year;
 import java.util.List;
 
 @Entity
@@ -14,15 +14,18 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Module {
+public class Semester {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+    private Type type;
+    private Year year;
 
-    @ManyToMany
-    private List<Teacher> teachers;
+    @OneToMany(mappedBy = "semester")
+    private List<AcademicSemester> academicSemester;
 
-
+    public enum Type {
+        FALL, SPRING
+    }
 }
