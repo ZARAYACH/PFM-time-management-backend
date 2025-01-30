@@ -1,6 +1,6 @@
 package com.multiplatform.time_management_backend.semester.service;
 
-import com.multiplatform.time_management_backend.AcademicModule.repository.AcademicModuleRepository;
+import com.multiplatform.time_management_backend.course.repository.CourseRepository;
 import com.multiplatform.time_management_backend.exeption.BadArgumentException;
 import com.multiplatform.time_management_backend.exeption.NotFoundException;
 import com.multiplatform.time_management_backend.group.repository.GroupRepository;
@@ -19,8 +19,6 @@ import java.util.Set;
 public class SemesterService {
 
     private final SemesterRepository semesterRepository;
-    private final GroupRepository groupRepository;
-    private final AcademicModuleRepository moduleRepository;
 
     public List<Semester> list() {
         return semesterRepository.findAll();

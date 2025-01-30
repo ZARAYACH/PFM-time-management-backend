@@ -6,7 +6,7 @@ import com.multiplatform.time_management_backend.department.repository.Departmen
 import com.multiplatform.time_management_backend.department.repository.TeacherRepository;
 import com.multiplatform.time_management_backend.exeption.BadArgumentException;
 import com.multiplatform.time_management_backend.exeption.NotFoundException;
-import com.multiplatform.time_management_backend.room.repository.RoomRepository;
+import com.multiplatform.time_management_backend.room.repository.ClassRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -19,7 +19,7 @@ import java.util.Set;
 public class DepartmentService {
 
     private final DepartmentRepository departmentRepository;
-    private final RoomRepository roomRepository;
+    private final ClassRoomRepository classRoomRepository;
     private final TeacherRepository teacherRepository;
 
     public List<Department> list() {
@@ -44,13 +44,13 @@ public class DepartmentService {
         Department newDepartment = validateDepartmentDtoAndCreate(departmentDto);
         department.setName(newDepartment.getName());
         department.setChief(newDepartment.getChief());
-        department.setRooms(newDepartment.getRooms());
+        department.setClassRooms(newDepartment.getClassRooms());
         return departmentRepository.save(department);
     }
 
     public void delete(Department department) {
         department.setChief(null);
-        department.setRooms(null);
+        department.setClassRooms(null);
         departmentRepository.delete(department);
     }
 
@@ -65,7 +65,7 @@ public class DepartmentService {
             throw new BadArgumentException(e);
         }
         if (departmentDto.roomIds() != null && !departmentDto.roomIds().isEmpty()) {
-            department.setRooms(roomRepository.findAllById(departmentDto.roomIds()));
+            department.setClassRooms(classRoomRepository.findAllById(departmentDto.roomIds()));
         }
         return department;
     }

@@ -1,4 +1,4 @@
-package com.multiplatform.time_management_backend.AcademicModule.model;
+package com.multiplatform.time_management_backend.course.model;
 
 import com.multiplatform.time_management_backend.semester.modal.AcademicSemester;
 import com.multiplatform.time_management_backend.user.model.Teacher;
@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AcademicModule {
+public class Course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,11 +23,11 @@ public class AcademicModule {
     private String name;
 
     @ManyToMany
-    @JoinTable(name = "moduleTeachers")
+    @JoinTable(name = "courseTeachers")
     private List<Teacher> teachers;
 
     @ManyToMany
-    @JoinTable(name = "modulesSemester")
+    @JoinTable(name = "SemesterCourses")
     private List<AcademicSemester> academicSemesters;
 
 

@@ -2,7 +2,7 @@ package com.multiplatform.time_management_backend.semester.modal;
 
 
 import com.multiplatform.time_management_backend.group.model.Group;
-import com.multiplatform.time_management_backend.AcademicModule.model.AcademicModule;
+import com.multiplatform.time_management_backend.course.model.Course;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,7 +28,7 @@ public class AcademicSemester {
     private Group group;
 
     @ManyToMany
-    @JoinTable(name = "semesterModules")
-    private List<AcademicModule> academicModules;
+    @JoinTable(name = "semesterCourses")
+    private List<Course> courses;
 
 }

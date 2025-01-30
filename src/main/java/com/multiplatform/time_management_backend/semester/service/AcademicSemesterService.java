@@ -1,6 +1,6 @@
 package com.multiplatform.time_management_backend.semester.service;
 
-import com.multiplatform.time_management_backend.AcademicModule.repository.AcademicModuleRepository;
+import com.multiplatform.time_management_backend.course.repository.CourseRepository;
 import com.multiplatform.time_management_backend.exeption.BadArgumentException;
 import com.multiplatform.time_management_backend.exeption.NotFoundException;
 import com.multiplatform.time_management_backend.group.repository.GroupRepository;
@@ -22,7 +22,7 @@ public class AcademicSemesterService {
     private final AcademicSemesterRepository academicSemesterRepository;
     private final SemesterRepository semesterRepository;
     private final GroupRepository groupRepository;
-    private final AcademicModuleRepository moduleRepository;
+    private final CourseRepository courseRepository;
 
     public List<AcademicSemester> list() {
         return academicSemesterRepository.findAll();
@@ -52,8 +52,9 @@ public class AcademicSemesterService {
                     .orElseThrow(() -> new IllegalArgumentException("Semester with id " + academicSemesterDto.semesterId() + " not found")));
             academicSemester.setGroup(groupRepository.findById(academicSemesterDto.groupId())
                     .orElseThrow(() -> new IllegalArgumentException("Group with id " + academicSemesterDto.groupId() + " not found")));
-            if (academicSemesterDto.modulesIds() != null && !academicSemesterDto.modulesIds().isEmpty()) {
-                academicSemester.setAcademicModules(moduleRepository.findAllById(academicSemesterDto.modulesIds()));
+            if (academicSemesterDto.
+                    courseIds() != null && !academicSemesterDto.courseIds().isEmpty()) {
+                academicSemester.setCourses(courseRepository.findAllById(academicSemesterDto.courseIds()));
             }
         } catch (IllegalArgumentException e) {
             throw new BadArgumentException(e);
@@ -67,14 +68,14 @@ public class AcademicSemesterService {
         AcademicSemester newacademicSemester = validateAcademicSemesterDtoAndCreate(academicSemesterDto);
         academicSemester.setSemester(newacademicSemester.getSemester());
         academicSemester.setGroup(newacademicSemester.getGroup());
-        academicSemester.setAcademicModules(newacademicSemester.getAcademicModules());
+        academicSemester.setCourses(newacademicSemester.getCourses());
         return academicSemesterRepository.save(academicSemester);
     }
 
     public void delete(AcademicSemester academicSemester) {
         academicSemester.setSemester(null);
         academicSemester.setGroup(null);
-        academicSemester.setAcademicModules(null);
+        academicSemester.setCourses(null);
         academicSemesterRepository.delete(academicSemester);
     }
 }
