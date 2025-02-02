@@ -33,8 +33,8 @@ jobs:
       - name: Login to the Registry
         uses: docker/login-action@v2
         with:
-          registry: iiadregistry.azurecr.io
-          username: githubActions
+          registry: ${{secrets.REGISTRY_URL}}
+          username: ${{secrets.USERNAME}}
           password: ${{secrets.REGISTRY_PASSWORD}}
       - name: Creating release branch and publishing version to registry
         env:
