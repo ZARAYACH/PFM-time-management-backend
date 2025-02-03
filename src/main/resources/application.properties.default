@@ -11,3 +11,4 @@ spring.jpa.hibernate.ddl-auto=create
 spring.jpa.show-sql=true
 spring.jpa.defer-datasource-initialization=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+app.security.jwt.key-pairs-path=/home/timeManagement/keys

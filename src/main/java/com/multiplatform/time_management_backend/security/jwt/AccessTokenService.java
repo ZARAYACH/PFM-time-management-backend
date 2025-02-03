@@ -1,7 +1,7 @@
 package com.multiplatform.time_management_backend.security.jwt;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.multiplatform.time_management_backend.configuration.CustomRedisCacheConfigurations;
 import com.multiplatform.time_management_backend.exeption.*;
@@ -17,7 +17,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import java.security.NoSuchAlgorithmException;
+import java.security.KeyPair;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -33,29 +35,27 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @Slf4j
 class AccessTokenService implements TokenService {
 
-    private final JWTVerifier verifier;
-    private final AlgorithmWithId algorithmWithId;
     private final JwtConfigurationProperties jwtConfigurationProperties;
     private final RedisCacheManager redisCacheManager;
     private final Cache sessionsCache;
     private final Cache accessTokensCache;
     private final SessionService sessionService;
+    private final RSAKeyPairConfigurations rsaKeyPairConfigurations;
 
-    public AccessTokenService(RSAKeyPairConfigurations rsaKeyPairConfigurations, JwtConfigurationProperties jwtConfigurationProperties,
-                              RedisCacheManager redisCacheManager, SessionService sessionService) throws NoSuchAlgorithmException {
+    public AccessTokenService(JwtConfigurationProperties jwtConfigurationProperties, RedisCacheManager redisCacheManager,
+                              SessionService sessionService, RSAKeyPairConfigurations rsaKeyPairConfigurations1) {
         this.jwtConfigurationProperties = jwtConfigurationProperties;
-        this.algorithmWithId = AlgorithmWithId.fromKeyPair(rsaKeyPairConfigurations.generateRSAKeyPair());
         this.redisCacheManager = redisCacheManager;
         this.sessionService = sessionService;
-        this.verifier = JWT.require(algorithmWithId.algorithm()).build();
         this.sessionsCache = redisCacheManager.getCache(CustomRedisCacheConfigurations.SESSION_IDS_CACHE_NAME);
         this.accessTokensCache = redisCacheManager.getCache(CustomRedisCacheConfigurations.ACCESS_JTI_CACHE_NAME);
+        this.rsaKeyPairConfigurations = rsaKeyPairConfigurations1;
     }
 
     @Override
     public DecodedJWT validateToken(String token) throws TokenValidationException {
         try {
-            DecodedJWT decodedJWT = verifier.verify(token);
+            DecodedJWT decodedJWT = JWT.require(getAlgorithm(JWT.decode(token).getKeyId())).build().verify(token);
             validateTokenClaims(decodedJWT);
             return decodedJWT;
         } catch (Exception verificationEx) {
@@ -108,14 +108,14 @@ class AccessTokenService implements TokenService {
         try {
             return JWT.create()
                     .withJWTId(UUID.randomUUID().toString())
-                    .withKeyId(algorithmWithId.id())
+                    .withKeyId(rsaKeyPairConfigurations.getAccessTokenSigningKeyPairId())
                     .withSubject(userDetails.getUsername())
                     .withClaim(ROLES_CLAIM_NAME, userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                     .withClaim(SESSION_ID_CLAIM_NAME, sessionId)
                     .withClaim(TOKEN_TYPE_CLAIM_NAME, TOKEN_TYPE_ACCESS_NAME)
                     .withIssuedAt(now)
                     .withExpiresAt(now.plusSeconds(jwtConfigurationProperties.getAccessTokenValidityInSeconds()))
-                    .sign(algorithmWithId.algorithm());
+                    .sign(getSigningAlgorithm());
         } catch (Exception e) {
             throw new AuthenticationServiceUnavailableException("Auth service unavailable", e);
         }
@@ -159,6 +159,16 @@ class AccessTokenService implements TokenService {
         if (accessTokensCache != null) {
             accessTokensCache.put(jti, LocalDateTime.now().toEpochSecond(ZoneOffset.systemDefault().getRules().getOffset(Instant.now())));
         }
+    }
+
+    private Algorithm getAlgorithm(String id) {
+        KeyPair keyPair = rsaKeyPairConfigurations.getKeyPair(id).orElseThrow(() -> new AuthenticationInvalidTokenException("Signing Key pair not found"));
+        return Algorithm.RSA256((RSAPublicKey) keyPair.getPublic(), (RSAPrivateKey) keyPair.getPrivate());
+    }
+
+    private Algorithm getSigningAlgorithm() {
+        KeyPair keyPair = rsaKeyPairConfigurations.getAccessTokenSigningKeyPair();
+        return Algorithm.RSA256((RSAPublicKey) keyPair.getPublic(), (RSAPrivateKey) keyPair.getPrivate());
     }
 }
 

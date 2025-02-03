@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
 
 @Service
@@ -20,10 +19,10 @@ public class JWKSetService {
 
     @Cacheable(value = "jwk_sets")
     public JWKSet jwkSet() {
-        return new JWKSet(rsaKeyPairConfigurations.getKeyPairs().stream()
-                .map(keyPairWithId -> (JWK) new RSAKey.Builder((RSAPublicKey) keyPairWithId.keyPair().getPublic())
-                .keyUse(KeyUse.SIGNATURE)
-                .algorithm(JWSAlgorithm.RS256)
-                .keyID(keyPairWithId.keyId()).build()).toList());
+        return new JWKSet(rsaKeyPairConfigurations.getKeyPairsWithId().entrySet().stream()
+                .map(keyPairWithId -> (JWK) new RSAKey.Builder((RSAPublicKey) keyPairWithId.getValue().getPublic())
+                        .keyUse(KeyUse.SIGNATURE)
+                        .algorithm(JWSAlgorithm.RS256)
+                        .keyID(keyPairWithId.getKey()).build()).toList());
     }
 }
