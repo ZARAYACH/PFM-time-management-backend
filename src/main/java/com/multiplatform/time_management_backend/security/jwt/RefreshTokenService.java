@@ -1,7 +1,7 @@
 package com.multiplatform.time_management_backend.security.jwt;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.multiplatform.time_management_backend.configuration.CustomRedisCacheConfigurations;
 import com.multiplatform.time_management_backend.exeption.*;
@@ -17,7 +17,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import java.security.NoSuchAlgorithmException;
+import java.security.KeyPair;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -32,28 +34,27 @@ import static java.util.Arrays.stream;
 @Slf4j
 class RefreshTokenService implements TokenService {
 
-    private final JWTVerifier verifier;
-    private final AlgorithmWithId algorithmWithId;
     private final CacheManager cacheManager;
     private final Cache sessionCache;
     private final Cache refreshTokensCache;
     private final JwtConfigurationProperties jwtConfigurationProperties;
     private final SessionService sessionService;
+    private final RSAKeyPairConfigurations rsaKeyPairConfigurations;
 
-    public RefreshTokenService(RSAKeyPairConfigurations rsaKeyPairConfigurations, CacheManager cacheManager, JwtConfigurationProperties jwtConfigurationProperties, SessionService sessionService) throws NoSuchAlgorithmException {
+    public RefreshTokenService(CacheManager cacheManager, JwtConfigurationProperties jwtConfigurationProperties,
+                               SessionService sessionService, RSAKeyPairConfigurations rsaKeyPairConfigurations1) {
         this.jwtConfigurationProperties = jwtConfigurationProperties;
-        this.algorithmWithId = AlgorithmWithId.fromKeyPair(rsaKeyPairConfigurations.generateRSAKeyPair());
+        this.rsaKeyPairConfigurations = rsaKeyPairConfigurations1;
         this.cacheManager = cacheManager;
         this.sessionCache = cacheManager.getCache(CustomRedisCacheConfigurations.SESSION_IDS_CACHE_NAME);
         this.refreshTokensCache = cacheManager.getCache(CustomRedisCacheConfigurations.REFRESH_JTI_CACHE_NAME);
-        this.verifier = JWT.require(algorithmWithId.algorithm()).build();
         this.sessionService = sessionService;
     }
 
     @Override
     public DecodedJWT validateToken(String token) throws TokenValidationException {
         try {
-            DecodedJWT decodedJWT = verifier.verify(token);
+            DecodedJWT decodedJWT = JWT.require(getAlgorithm(JWT.decode(token).getKeyId())).build().verify(token);
             validateTokenClaims(decodedJWT);
             return decodedJWT;
         } catch (Exception e) {
@@ -106,14 +107,14 @@ class RefreshTokenService implements TokenService {
         try {
             return JWT.create()
                     .withJWTId(UUID.randomUUID().toString())
-                    .withKeyId(algorithmWithId.id())
+                    .withKeyId(rsaKeyPairConfigurations.getRefreshTokenSigningKeyPairId())
                     .withSubject(userDetails.getUsername())
                     .withClaim(ROLES_CLAIM_NAME, userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                     .withClaim(TOKEN_TYPE_CLAIM_NAME, TOKEN_TYPE_REFRESH_NAME)
                     .withClaim(SESSION_ID_CLAIM_NAME, sessionId)
                     .withIssuedAt(now)
                     .withExpiresAt(now.plusSeconds(jwtConfigurationProperties.getRefreshTokenValidityInSeconds()))
-                    .sign(algorithmWithId.algorithm());
+                    .sign(getSigningAlgorithm());
         } catch (Exception e) {
             throw new AuthenticationServiceUnavailableException("Auth service unavailable", e);
         }
@@ -154,6 +155,16 @@ class RefreshTokenService implements TokenService {
         if (refreshTokensCache != null) {
             refreshTokensCache.put(jti, LocalDateTime.now().toEpochSecond(ZoneOffset.systemDefault().getRules().getOffset(Instant.now())));
         }
+    }
+
+    private Algorithm getAlgorithm(String id) {
+        KeyPair keyPair = rsaKeyPairConfigurations.getKeyPair(id).orElseThrow(() -> new AuthenticationInvalidTokenException("Signing Algorithm not found"));
+        return Algorithm.RSA256((RSAPublicKey) keyPair.getPublic(), (RSAPrivateKey) keyPair.getPrivate());
+    }
+
+    private Algorithm getSigningAlgorithm() {
+        KeyPair keyPair = rsaKeyPairConfigurations.getRefreshTokenSigningKeyPair();
+        return Algorithm.RSA256((RSAPublicKey) keyPair.getPublic(), (RSAPrivateKey) keyPair.getPrivate());
     }
 }
 
