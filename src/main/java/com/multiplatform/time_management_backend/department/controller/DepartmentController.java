@@ -43,7 +43,7 @@ public class DepartmentController {
         return departmentMapper.toDepartmentDto(departmentService.create(departmentDto));
     }
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     private DepartmentDto modify(@PathVariable long id, @RequestBody DepartmentDto departmentDto) throws NotFoundException, BadArgumentException {
         Department department = departmentService.findById(id);
         return departmentMapper.toDepartmentDto(departmentService.modify(department, departmentDto));

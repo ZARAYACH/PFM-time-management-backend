@@ -8,6 +8,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.NullValueCheckStrategy;
 import org.springframework.stereotype.Component;
 
+import java.time.Year;
 import java.util.List;
 
 @Mapper(componentModel = "spring",

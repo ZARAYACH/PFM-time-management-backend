@@ -1,8 +1,9 @@
 package com.multiplatform.time_management_backend.semester.modal;
 
 
+import com.multiplatform.time_management_backend.course.model.CourseByTeacher;
 import com.multiplatform.time_management_backend.group.model.Group;
-import com.multiplatform.time_management_backend.course.model.Course;
+import com.multiplatform.time_management_backend.timetable.modal.TimeTable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,8 +28,10 @@ public class AcademicSemester {
     @ManyToOne
     private Group group;
 
-    @ManyToMany
-    @JoinTable(name = "semesterCourses")
-    private List<Course> courses;
+    @OneToMany(mappedBy = "academicSemester")
+    private List<CourseByTeacher> courseByTeachers;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private TimeTable timeTable;
 
 }

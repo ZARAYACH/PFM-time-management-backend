@@ -44,7 +44,7 @@ public class ClassRoomController {
         return classRoomMapper.toClassRoomDto(classRoomService.create(classRoomDto));
     }
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     private ClassRoomDto modify(@PathVariable long id, @RequestBody ClassRoomDto classRoomDto) throws NotFoundException, BadArgumentException {
         ClassRoom classRoom = classRoomService.findById(id);
         return classRoomMapper.toClassRoomDto(classRoomService.modify(classRoom, classRoomDto));

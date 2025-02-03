@@ -20,7 +20,7 @@ public class Semester {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Type type;
-    private Year year;
+    private int year;
 
     @OneToMany(mappedBy = "semester")
     private List<AcademicSemester> academicSemester;

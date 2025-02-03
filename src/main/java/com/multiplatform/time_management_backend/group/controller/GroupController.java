@@ -44,7 +44,7 @@ public class GroupController {
         return groupMapper.toGroupDto(groupService.create(groupDto));
     }
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     private GroupDto modify(@PathVariable long id, @RequestBody GroupDto groupDto) throws NotFoundException, BadArgumentException {
         Group group = groupService.findById(id);
         return groupMapper.toGroupDto(groupService.modify(group, groupDto));

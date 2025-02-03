@@ -6,6 +6,7 @@ import com.multiplatform.time_management_backend.department.repository.Departmen
 import com.multiplatform.time_management_backend.department.repository.TeacherRepository;
 import com.multiplatform.time_management_backend.exeption.BadArgumentException;
 import com.multiplatform.time_management_backend.exeption.NotFoundException;
+import com.multiplatform.time_management_backend.room.model.ClassRoom;
 import com.multiplatform.time_management_backend.room.repository.ClassRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -65,7 +66,9 @@ public class DepartmentService {
             throw new BadArgumentException(e);
         }
         if (departmentDto.roomIds() != null && !departmentDto.roomIds().isEmpty()) {
-            department.setClassRooms(classRoomRepository.findAllById(departmentDto.roomIds()));
+            List<ClassRoom> classRooms = classRoomRepository.findAllById(departmentDto.roomIds());
+            classRooms.forEach(classRoom -> classRoom.setDepartment(department));
+            department.setClassRooms(classRooms);
         }
         return department;
     }

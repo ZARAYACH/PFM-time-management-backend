@@ -52,10 +52,6 @@ public class AcademicSemesterService {
                     .orElseThrow(() -> new IllegalArgumentException("Semester with id " + academicSemesterDto.semesterId() + " not found")));
             academicSemester.setGroup(groupRepository.findById(academicSemesterDto.groupId())
                     .orElseThrow(() -> new IllegalArgumentException("Group with id " + academicSemesterDto.groupId() + " not found")));
-            if (academicSemesterDto.
-                    courseIds() != null && !academicSemesterDto.courseIds().isEmpty()) {
-                academicSemester.setCourses(courseRepository.findAllById(academicSemesterDto.courseIds()));
-            }
         } catch (IllegalArgumentException e) {
             throw new BadArgumentException(e);
         }
@@ -68,14 +64,12 @@ public class AcademicSemesterService {
         AcademicSemester newacademicSemester = validateAcademicSemesterDtoAndCreate(academicSemesterDto);
         academicSemester.setSemester(newacademicSemester.getSemester());
         academicSemester.setGroup(newacademicSemester.getGroup());
-        academicSemester.setCourses(newacademicSemester.getCourses());
         return academicSemesterRepository.save(academicSemester);
     }
 
     public void delete(AcademicSemester academicSemester) {
         academicSemester.setSemester(null);
         academicSemester.setGroup(null);
-        academicSemester.setCourses(null);
         academicSemesterRepository.delete(academicSemester);
     }
 }

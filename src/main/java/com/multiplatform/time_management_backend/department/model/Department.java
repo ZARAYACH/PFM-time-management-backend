@@ -26,6 +26,7 @@ public class Department {
     @JoinColumn(name = "chief_id")
     private Teacher chief;
 
+
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
     private List<ClassRoom> classRooms;
 

@@ -45,7 +45,7 @@ public class CourseController {
         return courseMapper.toCourseDto(courseService.create(courseDto));
     }
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     private CourseDto modify(@PathVariable long id, @RequestBody CourseDto courseDto) throws NotFoundException, BadArgumentException {
         Course course = courseService.findById(id);
         return courseMapper.toCourseDto(courseService.modify(course, courseDto));

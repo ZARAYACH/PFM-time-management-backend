@@ -79,7 +79,10 @@ class RefreshTokenService implements TokenService {
     // To preserver the stateless nature of jwt's , the cache should be reachable if not we would divert to using the db to check for session validation
     private boolean validJTI(String id) {
         if (refreshTokensCache != null) {
-            return refreshTokensCache.get(id) == null;
+            try {
+                return refreshTokensCache.get(id) == null;
+                //TODO: implement a backup way to check if the token is black listed if the cache is unreachable
+            } catch (Exception ignored) {}
         }
         return true;
     }

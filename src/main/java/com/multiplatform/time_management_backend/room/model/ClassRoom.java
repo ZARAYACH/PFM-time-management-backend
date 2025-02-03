@@ -19,10 +19,16 @@ public class ClassRoom {
     private Long id;
     private String name;
     private String number;
+    @Enumerated(EnumType.STRING)
+    private Type type;
     private Long capacity;
-    private boolean emphie;
-    @ManyToOne
+    private boolean amphie;
+
+    @ManyToOne(cascade = CascadeType.ALL)
     private Department department;
 
+    public enum Type {
+        TP, COURSE, SEMINAR_ROOM
+    }
 
 }

@@ -78,7 +78,10 @@ class AccessTokenService implements TokenService {
 
     private boolean validJTI(String id) {
         if (accessTokensCache != null) {
-            return accessTokensCache.get(id) == null;
+            try {
+                return accessTokensCache.get(id) == null;
+            } catch (Exception ignore) {
+            }
         }
         return true;
     }

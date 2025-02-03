@@ -44,7 +44,7 @@ public class SemesterController {
         return semesterMapper.toSemesterDto(semesterService.create(semesterDto));
     }
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     private SemesterDto modify(@PathVariable long id, @RequestBody SemesterDto semesterDto) throws NotFoundException, BadArgumentException {
         Semester semester = semesterService.findById(id);
         return semesterMapper.toSemesterDto(semesterService.modify(semester, semesterDto));

@@ -8,6 +8,6 @@ import java.time.Year;
 public record SemesterDto(
         @NotNull Long id,
         @NotNull Semester.Type type,
-        @NotNull Year year
+        @NotNull int year
 ) {
 }

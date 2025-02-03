@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import java.time.Year;
 import java.util.List;
 import java.util.Set;
 
@@ -41,7 +42,6 @@ public class SemesterService {
     private Semester validateSemesterDtoAndCreate(SemesterDto semesterDto) throws BadArgumentException {
         try {
             Assert.notNull(semesterDto.type(), "Semester type cannot be null");
-            Assert.notNull(semesterDto.year(), "semester year cannot be empty");
         } catch (IllegalArgumentException e) {
             throw new BadArgumentException(e);
         }

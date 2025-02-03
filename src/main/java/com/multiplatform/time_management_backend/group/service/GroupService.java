@@ -45,7 +45,10 @@ public class GroupService {
             Assert.notEmpty(groupDto.studentIds(), "group studentIds cannot be empty");
             List<Student> students = studentRepository.findAllById(groupDto.studentIds());
             Assert.notEmpty(students, "group teachers cannot be empty");
-            return groupRepository.save(new Group(null, groupDto.name(), students, null));
+            Group group = new Group(null, groupDto.name(), null, null);
+            students.forEach(student -> student.setGroup(group));
+            group.setStudents(students);
+            return group;
         } catch (IllegalArgumentException e) {
             throw new BadArgumentException(e);
         }

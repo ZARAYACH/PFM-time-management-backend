@@ -45,7 +45,7 @@ public class CourseService {
             Assert.notEmpty(courseDto.teacherIds(), "Course teacherIds cannot be empty");
             List<Teacher> teachers = teacherService.findById(courseDto.teacherIds());
             Assert.notEmpty(teachers, "Course teachers cannot be empty");
-            return new Course(null, courseDto.name(), teachers, null);
+            return new Course(null, courseDto.name(), courseDto.classRoomType(), teachers, null);
         } catch (IllegalArgumentException e) {
             throw new BadArgumentException(e);
         }

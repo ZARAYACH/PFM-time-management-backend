@@ -43,7 +43,7 @@ public class ClassRoomService {
         classRoom.setName(newClassRoom.getName());
         classRoom.setCapacity(newClassRoom.getCapacity());
         classRoom.setNumber(newClassRoom.getNumber());
-        classRoom.setEmphie(newClassRoom.isEmphie());
+        classRoom.setAmphie(newClassRoom.isAmphie());
         classRoom.setDepartment(newClassRoom.getDepartment());
         return classRoomRepository.save(classRoom);
     }
@@ -54,7 +54,7 @@ public class ClassRoomService {
     }
 
     public ClassRoom validateRoomDtoAndCreate(ClassRoomDto classRoomDto) throws NotFoundException, BadArgumentException {
-        ClassRoom classRoom = new ClassRoom(null, classRoomDto.name(), classRoomDto.number(), classRoomDto.capacity(), classRoomDto.emphie(), null);
+        ClassRoom classRoom = new ClassRoom(null, classRoomDto.name(), classRoomDto.number(), classRoomDto.type(), classRoomDto.capacity(), classRoomDto.amphie(), null);
         try {
             Assert.hasText(classRoomDto.number(), "ClassRoom number cannot be null");
             Assert.isTrue(classRoomDto.capacity() > 0, "ClassRoom capacity cannot less than 0");
@@ -69,4 +69,7 @@ public class ClassRoomService {
         return classRoom;
     }
 
+    public List<ClassRoom> findByType(ClassRoom.Type classRoomType) {
+        return classRoomRepository.findAllByType(classRoomType);
+    }
 }
