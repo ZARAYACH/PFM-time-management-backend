@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -89,7 +90,9 @@ class RefreshTokenService implements TokenService {
 
     private boolean validSession(String sessionId) {
         if (sessionCache != null) {
-            return sessionCache.get(sessionId) == null;
+            try {
+                return sessionCache.get(sessionId) == null;
+            } catch (RedisConnectionFailureException ignored) {}
         }
         try {
             return sessionService.findById(sessionId).getExpiredAt().isAfter(LocalDateTime.now());
@@ -155,9 +158,12 @@ class RefreshTokenService implements TokenService {
 
     @Override
     public void blackListToken(String jti) {
-        if (refreshTokensCache != null) {
-            refreshTokensCache.put(jti, LocalDateTime.now().toEpochSecond(ZoneOffset.systemDefault().getRules().getOffset(Instant.now())));
-        }
+        try {
+            if (refreshTokensCache != null) {
+                refreshTokensCache.put(jti, LocalDateTime.now().toEpochSecond(ZoneOffset.systemDefault().getRules().getOffset(Instant.now())));
+            }
+        } catch (RedisConnectionFailureException ignored) {}
+        //TODO: implement a blacklist in the database as a alternative when redis is unreachable
     }
 
     private Algorithm getAlgorithm(String id) {

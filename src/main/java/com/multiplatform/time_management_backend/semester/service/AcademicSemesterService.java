@@ -1,6 +1,8 @@
 package com.multiplatform.time_management_backend.semester.service;
 
+import com.multiplatform.time_management_backend.course.model.TeacherCourse;
 import com.multiplatform.time_management_backend.course.repository.CourseRepository;
+import com.multiplatform.time_management_backend.department.repository.TeacherRepository;
 import com.multiplatform.time_management_backend.exeption.BadArgumentException;
 import com.multiplatform.time_management_backend.exeption.NotFoundException;
 import com.multiplatform.time_management_backend.group.repository.GroupRepository;
@@ -14,6 +16,7 @@ import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +26,7 @@ public class AcademicSemesterService {
     private final SemesterRepository semesterRepository;
     private final GroupRepository groupRepository;
     private final CourseRepository courseRepository;
+    private final TeacherRepository teacherRepository;
 
     public List<AcademicSemester> list() {
         return academicSemesterRepository.findAll();
@@ -52,6 +56,11 @@ public class AcademicSemesterService {
                     .orElseThrow(() -> new IllegalArgumentException("Semester with id " + academicSemesterDto.semesterId() + " not found")));
             academicSemester.setGroup(groupRepository.findById(academicSemesterDto.groupId())
                     .orElseThrow(() -> new IllegalArgumentException("Group with id " + academicSemesterDto.groupId() + " not found")));
+
+            academicSemester.setTeacherCourse(academicSemesterDto.teacherCourse().stream().map(teacherCourseDto -> new TeacherCourse(null,
+                    courseRepository.findById(teacherCourseDto.courseId()).orElseThrow(() -> new IllegalArgumentException("Course not found")),
+                    teacherRepository.findById(teacherCourseDto.teacherId()).orElseThrow(() -> new IllegalArgumentException("Teacher not found")),
+                    academicSemester)).collect(Collectors.toList()));
         } catch (IllegalArgumentException e) {
             throw new BadArgumentException(e);
         }

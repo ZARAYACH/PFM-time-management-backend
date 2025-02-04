@@ -14,7 +14,7 @@ import java.util.List;
 @Mapper(componentModel = "spring",
         nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 @Component
-public interface GroupMapper {
+public  interface GroupMapper {
     @Mapping(source = "students" , target = "studentIds")
     GroupDto toGroupDto(Group group);
 

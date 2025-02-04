@@ -1,7 +1,6 @@
 package com.multiplatform.time_management_backend.course.model;
 
 import com.multiplatform.time_management_backend.room.model.ClassRoom;
-import com.multiplatform.time_management_backend.user.model.Teacher;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,12 +24,8 @@ public class Course {
     @Enumerated(EnumType.STRING)
     private ClassRoom.Type classRoomType;
 
-    @ManyToMany
-    @JoinTable(name = "courseTeachers")
-    private List<Teacher> teachers;
-
     @OneToMany(mappedBy = "course")
-    private List<CourseByTeacher> courseByTeachers;
+    private List<TeacherCourse> teacherCourses;
 
 
 }

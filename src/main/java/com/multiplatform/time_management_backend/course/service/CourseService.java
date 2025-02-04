@@ -43,9 +43,7 @@ public class CourseService {
         try {
             Assert.hasText(courseDto.name(), "Course name cannot be empty");
             Assert.notEmpty(courseDto.teacherIds(), "Course teacherIds cannot be empty");
-            List<Teacher> teachers = teacherService.findById(courseDto.teacherIds());
-            Assert.notEmpty(teachers, "Course teachers cannot be empty");
-            return new Course(null, courseDto.name(), courseDto.classRoomType(), teachers, null);
+            return new Course(null, courseDto.name(), courseDto.classRoomType(), null);
         } catch (IllegalArgumentException e) {
             throw new BadArgumentException(e);
         }
@@ -54,12 +52,10 @@ public class CourseService {
     public Course modify(Course course, CourseDto courseDto) throws BadArgumentException {
         Course newCourse = validateCourseDtoAndCreate(courseDto);
         course.setName(newCourse.getName());
-        course.setTeachers(newCourse.getTeachers());
         return courseRepository.save(course);
     }
 
     public void delete(Course course) {
-        course.setTeachers(null);
         courseRepository.delete(course);
     }
 }

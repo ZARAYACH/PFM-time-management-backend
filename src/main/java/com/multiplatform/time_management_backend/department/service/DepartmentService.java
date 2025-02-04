@@ -8,6 +8,7 @@ import com.multiplatform.time_management_backend.exeption.BadArgumentException;
 import com.multiplatform.time_management_backend.exeption.NotFoundException;
 import com.multiplatform.time_management_backend.room.model.ClassRoom;
 import com.multiplatform.time_management_backend.room.repository.ClassRoomRepository;
+import com.multiplatform.time_management_backend.user.model.Teacher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -60,8 +61,10 @@ public class DepartmentService {
         try {
             Assert.notNull(departmentDto.name(), "Department name cannot be null");
             Assert.notNull(departmentDto.chiefId(), "Department chief cannot be null");
-            department.setChief(teacherRepository.findById(departmentDto.chiefId())
-                    .orElseThrow(() -> new NotFoundException("Teacher not found")));
+            Teacher chief = teacherRepository.findById(departmentDto.chiefId())
+                    .orElseThrow(() -> new NotFoundException("Teacher not found"));
+            Assert.isTrue(!departmentRepository.existsByChief(chief),"Teacher already a chief of other department");
+            department.setChief(chief);
         } catch (IllegalArgumentException e) {
             throw new BadArgumentException(e);
         }
