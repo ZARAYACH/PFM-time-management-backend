@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.Cache;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -78,14 +79,20 @@ class AccessTokenService implements TokenService {
 
     private boolean validJTI(String id) {
         if (accessTokensCache != null) {
-            return accessTokensCache.get(id) == null;
+            try {
+                return accessTokensCache.get(id) == null;
+            } catch (Exception ignore) {
+            }
         }
         return true;
     }
 
     private boolean validSession(String sessionId) {
         if (sessionsCache != null) {
-            return sessionsCache.get(sessionId) == null;
+            try {
+                return sessionsCache.get(sessionId) == null;
+            } catch (RedisConnectionFailureException ignore) {
+            }
         }
         try {
             return sessionService.findById(sessionId).getExpiredAt().isAfter(LocalDateTime.now());
@@ -156,9 +163,13 @@ class AccessTokenService implements TokenService {
 
     @Override
     public void blackListToken(String jti) {
-        if (accessTokensCache != null) {
-            accessTokensCache.put(jti, LocalDateTime.now().toEpochSecond(ZoneOffset.systemDefault().getRules().getOffset(Instant.now())));
+        try {
+            if (accessTokensCache != null) {
+                accessTokensCache.put(jti, LocalDateTime.now().toEpochSecond(ZoneOffset.systemDefault().getRules().getOffset(Instant.now())));
+            }
+        } catch (RedisConnectionFailureException ignored) {
         }
+        //TODO: implement a blacklist in the database as a alternative when redis is unreachable
     }
 
     private Algorithm getAlgorithm(String id) {
