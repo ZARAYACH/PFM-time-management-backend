@@ -1,5 +1,6 @@
 package com.multiplatform.time_management_backend.user.model.dto;
 
+import com.multiplatform.time_management_backend.user.model.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -12,7 +13,8 @@ public record UserDto(
         String email,
         String firstName,
         String lastName,
-        LocalDate birthDate
+        LocalDate birthDate,
+        User.Role role
 ) {
     public record PostUserDto(
             @NotBlank
