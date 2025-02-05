@@ -134,12 +134,11 @@ class AccessTokenService implements TokenService {
     }
 
     @Override
-    public Cookie buildTokenCookie(String token, boolean isSecure, String domain) {
+    public Cookie buildTokenCookie(String token, boolean isSecure) {
         Cookie accessTokenCookie = new Cookie(ACCESS_TOKEN_COOKIE_NAME, token);
         accessTokenCookie.setHttpOnly(true);
         accessTokenCookie.setSecure(isSecure);
         accessTokenCookie.setPath("/");
-        accessTokenCookie.setDomain(domain);
         accessTokenCookie.setMaxAge(Math.toIntExact(getExpirationTimeInSeconds()));
         return accessTokenCookie;
     }

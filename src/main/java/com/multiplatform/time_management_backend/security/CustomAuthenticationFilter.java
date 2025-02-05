@@ -84,8 +84,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         tokens.put("access_token", accessToken);
         response.setContentType(APPLICATION_JSON_VALUE);
 
-        response.addCookie(jwtService.createAccessTokenCookie(accessToken, request.isSecure(), request.getServerName()));
-        response.addCookie(jwtService.createRefreshTokenCookie(refreshToken, request.isSecure(), request.getServerName()));
+        response.addCookie(jwtService.createAccessTokenCookie(accessToken, request.isSecure()));
+        response.addCookie(jwtService.createRefreshTokenCookie(refreshToken, request.isSecure()));
 
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
     }

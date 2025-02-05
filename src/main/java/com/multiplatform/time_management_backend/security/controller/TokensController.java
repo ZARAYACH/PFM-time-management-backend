@@ -48,8 +48,8 @@ public class TokensController {
 
         jwtService.extendSessionExpirationWindowAsync(decodedRefreshToken.getClaim(JwtService.SESSION_ID_CLAIM_NAME).asString());
 
-        response.addCookie(jwtService.createAccessTokenCookie(token, request.isSecure(), request.getServerName()));
-        response.addCookie(jwtService.createRefreshTokenCookie(newRefreshToken, request.isSecure(), request.getServerName()));
+        response.addCookie(jwtService.createAccessTokenCookie(token, request.isSecure()));
+        response.addCookie(jwtService.createRefreshTokenCookie(newRefreshToken, request.isSecure()));
 
         return Map.of("access_token", token);
     }

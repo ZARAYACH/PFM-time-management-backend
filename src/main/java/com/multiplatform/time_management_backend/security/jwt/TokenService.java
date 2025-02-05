@@ -17,7 +17,7 @@ interface TokenService {
 
     Long getExpirationTimeInSeconds();
 
-    Cookie buildTokenCookie(String token, boolean isSecure, String domain);
+    Cookie buildTokenCookie(String token, boolean isSecure);
 
     String extractToken(HttpServletRequest request);
 
