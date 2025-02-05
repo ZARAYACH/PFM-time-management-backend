@@ -66,7 +66,7 @@ public class UserService {
             Assert.hasText(email, "Email is required");
             Assert.isTrue(emailValidator.isValid(email), "Email is not valid");
             Assert.isTrue(!userRepository.existsByEmail(email), "Email Already Exists");
-            Assert.isTrue(passwordValidator.validate(new PasswordData(password)).isValid(), "Password should least be 8 character with one uppercase, one special and one digit characters");
+            Assert.isTrue(passwordValidator.validate(new PasswordData(password)).isValid(), "Password should be at least be 8 character with one uppercase, one special and one digit characters");
         } catch (IllegalArgumentException e) {
             throw new BadArgumentException(e);
         }
