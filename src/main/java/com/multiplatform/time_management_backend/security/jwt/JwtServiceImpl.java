@@ -55,13 +55,13 @@ public class JwtServiceImpl implements JwtService {
 
 
     @Override
-    public Cookie createAccessTokenCookie(String token, boolean isSecure, String domain) {
-        return accessTokenService.buildTokenCookie(token, isSecure, domain);
+    public Cookie createAccessTokenCookie(String token, boolean isSecure) {
+        return accessTokenService.buildTokenCookie(token, isSecure);
     }
 
     @Override
-    public Cookie createRefreshTokenCookie(String token, boolean isSecure, String domain) {
-        return refreshTokenService.buildTokenCookie(token, isSecure, domain);
+    public Cookie createRefreshTokenCookie(String token, boolean isSecure) {
+        return refreshTokenService.buildTokenCookie(token, isSecure);
     }
 
     @Override

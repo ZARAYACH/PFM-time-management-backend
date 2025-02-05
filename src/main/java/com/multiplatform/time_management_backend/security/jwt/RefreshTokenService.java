@@ -132,11 +132,10 @@ class RefreshTokenService implements TokenService {
     }
 
     @Override
-    public Cookie buildTokenCookie(String token, boolean isSecure, String domain) {
+    public Cookie buildTokenCookie(String token, boolean isSecure) {
         Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, token);
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(isSecure);
-        refreshTokenCookie.setDomain(domain);
         refreshTokenCookie.setPath("/api/v1/tokens");
         refreshTokenCookie.setMaxAge(Math.toIntExact(getExpirationTimeInSeconds()));
         return refreshTokenCookie;

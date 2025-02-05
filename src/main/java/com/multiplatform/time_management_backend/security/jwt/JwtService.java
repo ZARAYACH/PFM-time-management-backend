@@ -28,9 +28,9 @@ public interface JwtService {
     String generateRefreshToken(UserDetails userDetails, String sessionId) throws BadArgumentException;
 
     //in production is secure should always be true
-    Cookie createAccessTokenCookie(String token, boolean isSecure, String domain);
+    Cookie createAccessTokenCookie(String token, boolean isSecure);
 
-    Cookie createRefreshTokenCookie(String token, boolean isSecure, String domain);
+    Cookie createRefreshTokenCookie(String token, boolean isSecure);
 
     String extractAccessToken(HttpServletRequest request);
 

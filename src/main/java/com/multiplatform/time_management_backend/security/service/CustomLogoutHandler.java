@@ -32,8 +32,8 @@ public class CustomLogoutHandler implements LogoutHandler {
             Session session = sessionService.findById(decodedJWT.getClaim(JwtService.SESSION_ID_CLAIM_NAME).asString());
             sessionService.terminate(session);
 
-            response.addCookie(jwtService.createAccessTokenCookie(null, request.isSecure(), request.getServerName()));
-            response.addCookie(jwtService.createRefreshTokenCookie(null, request.isSecure(), request.getServerName()));
+            response.addCookie(jwtService.createAccessTokenCookie(null, request.isSecure()));
+            response.addCookie(jwtService.createRefreshTokenCookie(null, request.isSecure()));
             response.setStatus(HttpServletResponse.SC_OK);
             response.sendRedirect("/login?logout");
 
