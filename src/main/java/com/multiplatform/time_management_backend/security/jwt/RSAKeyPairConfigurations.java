@@ -6,7 +6,6 @@ import com.fasterxml.uuid.impl.UUIDUtil;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.Assert;
@@ -30,21 +29,28 @@ import java.util.stream.Stream;
 
 @Slf4j
 @Configuration
-@RequiredArgsConstructor
 public class RSAKeyPairConfigurations {
 
     private final JwtConfigurationProperties jwtConfigurationProperties;
+    private final Path accessKeyPairsDir;
+    private final Path refreshKeyPairsDir;
     private final TimeBasedEpochGenerator generator = Generators.timeBasedEpochGenerator();
     @Getter
     private final ConcurrentHashMap<String, KeyPair> keyPairsWithId = new ConcurrentHashMap<>();
 
     private String accessTokenUsedKeyPairKey;
     private String refreshTokenUsedKeyPairKey;
+
+    public RSAKeyPairConfigurations(JwtConfigurationProperties jwtConfigurationProperties) throws IOException {
+        this.jwtConfigurationProperties = jwtConfigurationProperties;
+        accessKeyPairsDir = Files.createDirectories(Path.of(jwtConfigurationProperties.getKeyPairsPath(), "access"));
+        refreshKeyPairsDir = Files.createDirectories(Path.of(jwtConfigurationProperties.getKeyPairsPath(), "refresh"));
+    }
+
     //TODO : Implement a way to rotate key pairs for a specific duration and also do the cleanup of old key pairs
     @PostConstruct
     public void init() throws IOException, NoSuchAlgorithmException {
-        Path accessKeyPairsDir = Files.createDirectories(Path.of(jwtConfigurationProperties.getKeyPairsPath(), "access"));
-        Path refreshKeyPairsDir = Files.createDirectories(Path.of(jwtConfigurationProperties.getKeyPairsPath(), "refresh"));
+
 
         try (Stream<Path> accessKeyPairsDirsStream = Files.list(Path.of(accessKeyPairsDir.toString()));
              Stream<Path> refreshKeyPairsDirsStream = Files.list(Path.of(refreshKeyPairsDir.toString()));) {
@@ -52,11 +58,14 @@ public class RSAKeyPairConfigurations {
             Set<Path> accessKeyPairsDirs = accessKeyPairsDirsStream.collect(Collectors.toSet());
             Set<Path> refreshKeyPairsDirs = refreshKeyPairsDirsStream.collect(Collectors.toSet());
 
+            this.accessTokenUsedKeyPairKey = getLatestKeyPairId(accessKeyPairsDirs)
+                    .orElseGet(() -> generateKeyPairAndSaveAndGetId(accessKeyPairsDir));
+
+            this.refreshTokenUsedKeyPairKey = getLatestKeyPairId(refreshKeyPairsDirs)
+                    .orElseGet(() -> generateKeyPairAndSaveAndGetId(refreshKeyPairsDir));
+
             loadAllAvailableKeys(accessKeyPairsDirs);
             loadAllAvailableKeys(refreshKeyPairsDirs);
-
-            this.accessTokenUsedKeyPairKey = getLatestKeyPairId(accessKeyPairsDirs).orElseGet(() -> generateKeyPairAndSaveAndGetId(accessKeyPairsDir));
-            this.refreshTokenUsedKeyPairKey = getLatestKeyPairId(refreshKeyPairsDirs).orElseGet(() -> generateKeyPairAndSaveAndGetId(refreshKeyPairsDir));
         }
     }
 
@@ -65,6 +74,7 @@ public class RSAKeyPairConfigurations {
             KeyPair keyPair = generateRSAKeyPair();
             String id = generator.generate().toString();
             saveKeyPair(savingDir, id, keyPair);
+            keyPairsWithId.put(id, keyPair);
             return id;
         } catch (NoSuchAlgorithmException | IOException e) {
             throw new RuntimeException(e);
@@ -152,11 +162,13 @@ public class RSAKeyPairConfigurations {
     }
 
     public KeyPair getRefreshTokenSigningKeyPair() {
-        return keyPairsWithId.get(refreshTokenUsedKeyPairKey);
+        return Optional.of(keyPairsWithId.get(refreshTokenUsedKeyPairKey))
+                .orElseGet(() -> keyPairsWithId.get(generateKeyPairAndSaveAndGetId(refreshKeyPairsDir)));
     }
 
     public KeyPair getAccessTokenSigningKeyPair() {
-        return keyPairsWithId.get(accessTokenUsedKeyPairKey);
+        return Optional.of(keyPairsWithId.get(accessTokenUsedKeyPairKey))
+                .orElseGet(() -> keyPairsWithId.get(generateKeyPairAndSaveAndGetId(accessKeyPairsDir)));
     }
 
 }

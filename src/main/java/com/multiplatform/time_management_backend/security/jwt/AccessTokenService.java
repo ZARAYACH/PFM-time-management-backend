@@ -174,7 +174,9 @@ class AccessTokenService implements TokenService {
 
     private Algorithm getAlgorithm(String id) {
         KeyPair keyPair = rsaKeyPairConfigurations.getKeyPair(id).orElseThrow(() -> new AuthenticationInvalidTokenException("Signing Key pair not found"));
-        return Algorithm.RSA256((RSAPublicKey) keyPair.getPublic(), (RSAPrivateKey) keyPair.getPrivate());
+        return Algorithm.RSA256(
+                (RSAPublicKey) keyPair.getPublic(),
+                (RSAPrivateKey) keyPair.getPrivate());
     }
 
     private Algorithm getSigningAlgorithm() {
