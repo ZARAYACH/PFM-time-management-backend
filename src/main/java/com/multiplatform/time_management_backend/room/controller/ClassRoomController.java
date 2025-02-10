@@ -25,33 +25,29 @@ public class ClassRoomController {
     private final ClassRoomService classRoomService;
 
     @GetMapping
-    private List<ClassRoomDto> list() {
+    private List<ClassRoomDto> listClassRoom() {
         return classRoomMapper.toClassRoomDto(classRoomService.list());
     }
 
     @GetMapping("/{id}")
-    private ClassRoomDto findById(@PathVariable long id) throws NotFoundException {
+    private ClassRoomDto findClassRoomById(@PathVariable long id) throws NotFoundException {
         return classRoomMapper.toClassRoomDto(classRoomService.findById(id));
     }
 
-    @GetMapping("/{ids}")
-    private List<ClassRoomDto> findByIds(@PathVariable Set<Long> ids) {
-        return classRoomMapper.toClassRoomDto(classRoomService.findById(ids));
-    }
 
     @PostMapping
-    private ClassRoomDto create(@RequestBody ClassRoomDto classRoomDto) throws NotFoundException, BadArgumentException {
+    private ClassRoomDto createClassRoom(@RequestBody ClassRoomDto classRoomDto) throws NotFoundException, BadArgumentException {
         return classRoomMapper.toClassRoomDto(classRoomService.create(classRoomDto));
     }
 
     @PutMapping("/{id}")
-    private ClassRoomDto modify(@PathVariable long id, @RequestBody ClassRoomDto classRoomDto) throws NotFoundException, BadArgumentException {
+    private ClassRoomDto modifyClassRoom(@PathVariable long id, @RequestBody ClassRoomDto classRoomDto) throws NotFoundException, BadArgumentException {
         ClassRoom classRoom = classRoomService.findById(id);
         return classRoomMapper.toClassRoomDto(classRoomService.modify(classRoom, classRoomDto));
     }
 
     @DeleteMapping("/{id}")
-    private Map<String, Boolean> delete(@PathVariable long id) throws NotFoundException {
+    private Map<String, Boolean> deleteClassRoom(@PathVariable long id) throws NotFoundException {
         ClassRoom classRoom = classRoomService.findById(id);
         classRoomService.delete(classRoom);
         return Collections.singletonMap("deleted", true);

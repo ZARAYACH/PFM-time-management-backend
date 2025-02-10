@@ -1,9 +1,7 @@
 package com.multiplatform.time_management_backend.semester.service;
 
-import com.multiplatform.time_management_backend.course.repository.CourseRepository;
 import com.multiplatform.time_management_backend.exeption.BadArgumentException;
 import com.multiplatform.time_management_backend.exeption.NotFoundException;
-import com.multiplatform.time_management_backend.group.repository.GroupRepository;
 import com.multiplatform.time_management_backend.semester.modal.Semester;
 import com.multiplatform.time_management_backend.semester.modal.dto.SemesterDto;
 import com.multiplatform.time_management_backend.semester.repository.SemesterRepository;
@@ -11,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import java.time.Year;
 import java.util.List;
 import java.util.Set;
 
@@ -45,7 +42,7 @@ public class SemesterService {
         } catch (IllegalArgumentException e) {
             throw new BadArgumentException(e);
         }
-        return new Semester(null, semesterDto.type(), semesterDto.year(), null);
+        return new Semester(semesterDto.type(), semesterDto.year());
     }
 
 
@@ -57,7 +54,7 @@ public class SemesterService {
     }
 
     public void delete(Semester semester) {
-        semester.setAcademicSemester(null);
+        semester.setAcademicClass(null);
         semesterRepository.delete(semester);
     }
 }

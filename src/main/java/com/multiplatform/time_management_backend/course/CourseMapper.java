@@ -2,9 +2,7 @@ package com.multiplatform.time_management_backend.course;
 
 
 import com.multiplatform.time_management_backend.course.model.Course;
-import com.multiplatform.time_management_backend.course.model.TeacherCourse;
 import com.multiplatform.time_management_backend.course.model.dto.CourseDto;
-import com.multiplatform.time_management_backend.course.model.dto.TeacherCourseDto;
 import com.multiplatform.time_management_backend.user.model.Teacher;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -26,11 +24,4 @@ public interface CourseMapper {
         return teacher.getId();
     }
 
-    @Mapping(source = "teacher.id", target = "teacherId")
-    @Mapping(source = "course.id", target = "courseId")
-    @Mapping(source = "academicSemester.id" , target = "academicSemesterId")
-
-    TeacherCourseDto toTeacherCourseDto(TeacherCourse teacherCourse);
-
-    List<TeacherCourseDto> toTeacherCourseDto(List<TeacherCourse> list);
 }

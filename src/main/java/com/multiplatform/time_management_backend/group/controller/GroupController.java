@@ -25,33 +25,28 @@ public class GroupController {
     private final GroupService groupService;
 
     @GetMapping
-    private List<GroupDto> list() {
+    private List<GroupDto> listGroup() {
         return groupMapper.toGroupDto(groupService.list());
     }
 
     @GetMapping("/{id}")
-    private GroupDto findById(@PathVariable long id) throws NotFoundException {
+    private GroupDto findGroupById(@PathVariable long id) throws NotFoundException {
         return groupMapper.toGroupDto(groupService.findById(id));
     }
 
-    @GetMapping("/{ids}")
-    private List<GroupDto> findByIds(@PathVariable Set<Long> ids) {
-        return groupMapper.toGroupDto(groupService.findById(ids));
-    }
-
     @PostMapping
-    private GroupDto create(@RequestBody GroupDto groupDto) throws NotFoundException, BadArgumentException {
+    private GroupDto createGroup(@RequestBody GroupDto groupDto) throws NotFoundException, BadArgumentException {
         return groupMapper.toGroupDto(groupService.create(groupDto));
     }
 
     @PutMapping("/{id}")
-    private GroupDto modify(@PathVariable long id, @RequestBody GroupDto groupDto) throws NotFoundException, BadArgumentException {
+    private GroupDto modifyGroup(@PathVariable long id, @RequestBody GroupDto groupDto) throws NotFoundException, BadArgumentException {
         Group group = groupService.findById(id);
         return groupMapper.toGroupDto(groupService.modify(group, groupDto));
     }
 
     @DeleteMapping("/{id}")
-    private Map<String, Boolean> delete(@PathVariable long id) throws NotFoundException {
+    private Map<String, Boolean> deleteGroup(@PathVariable long id) throws NotFoundException {
         Group group = groupService.findById(id);
         groupService.delete(group);
         return Collections.singletonMap("deleted", true);

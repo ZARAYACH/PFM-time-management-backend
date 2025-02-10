@@ -14,4 +14,13 @@ public enum Slot {
     private final LocalTime startTime;
     private final LocalTime endTime;
 
+    public static Slot get(int i) {
+        return switch (i) {
+            case 0 -> MORNING_FIRST;
+            case 1 -> MORNING_SECOND;
+            case 2 -> AFTERNOON_FIRST;
+            case 3 -> AFTERNOON_SECOND;
+            default -> null;
+        };
+    }
 }

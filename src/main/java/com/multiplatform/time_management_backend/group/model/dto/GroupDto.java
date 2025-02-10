@@ -7,7 +7,7 @@ import java.util.Set;
 
 public record GroupDto(
         @NotNull Long id,
-        @NotBlank String name,
+        String name,
         Set<Long> studentIds
 ) {
 }

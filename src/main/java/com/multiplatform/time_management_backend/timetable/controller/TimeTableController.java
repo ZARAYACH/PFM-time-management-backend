@@ -1,18 +1,20 @@
 package com.multiplatform.time_management_backend.timetable.controller;
 
+import com.multiplatform.time_management_backend.exeption.BadArgumentException;
+import com.multiplatform.time_management_backend.exeption.NotFoundException;
 import com.multiplatform.time_management_backend.semester.modal.Semester;
 import com.multiplatform.time_management_backend.semester.service.SemesterService;
 import com.multiplatform.time_management_backend.timetable.TimeTableMapper;
+import com.multiplatform.time_management_backend.timetable.modal.TimeTable;
 import com.multiplatform.time_management_backend.timetable.modal.TimeTableDto;
 import com.multiplatform.time_management_backend.timetable.service.TimeTableGenerator;
 import com.multiplatform.time_management_backend.timetable.service.TimeTableService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/time-tables")
@@ -26,13 +28,32 @@ public class TimeTableController {
     private final SemesterService semesterService;
 
     @GetMapping
-    private List<TimeTableDto> list() {
+    private List<TimeTableDto> listTimeTables() {
         return timeTableMapper.toTimeTableDto(timeTableService.list());
     }
 
-    @GetMapping("/generate")
-    private List<TimeTableGenerator.TimeTableSet> generateTimeTables() {
-        List<Semester> semesters = semesterService.list();
-        return semesters.stream().map(semester -> timeTableGenerator.generateTimeTables(semester,50, 100)).toList();
+    @PostMapping
+    private TimeTableDto createTimeTable(@RequestBody TimeTableDto timeTableDto) {
+        //TODO : implement later
+        return null;
+    }
+
+    @PutMapping("/{id}")
+    private TimeTableDto updateTimeTable(@PathVariable Long id, @RequestBody TimeTableDto timeTableDto) throws NotFoundException {
+        TimeTable timeTable = timeTableService.findById(id);
+        return timeTableMapper.toTimeTableDto(timeTableService.modify(timeTable, timeTableDto));
+    }
+
+    @DeleteMapping("/{id}")
+    private Map<String, Boolean> deleteTimeTable(@PathVariable Long id) throws NotFoundException {
+        TimeTable timeTable = timeTableService.findById(id);
+        timeTableService.delete(timeTable);
+        return Map.of("deleted", Boolean.TRUE);
+    }
+
+    @PostMapping("/generate")
+    private List<TimeTableDto> generateTimeTables(@RequestParam Long semesterId) throws BadArgumentException, NotFoundException {
+        Semester semester = semesterService.findById(semesterId);
+        return timeTableMapper.toTimeTableDto(timeTableGenerator.generateTimeTables(semester));
     }
 }

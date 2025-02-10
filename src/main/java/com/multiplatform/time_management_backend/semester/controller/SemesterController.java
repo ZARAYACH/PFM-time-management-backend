@@ -25,33 +25,28 @@ public class SemesterController {
     private final SemesterService semesterService;
 
     @GetMapping
-    private List<SemesterDto> list() {
+    private List<SemesterDto> listSemester() {
         return semesterMapper.toSemesterDto(semesterService.list());
     }
 
     @GetMapping("/{id}")
-    private SemesterDto findById(@PathVariable long id) throws NotFoundException {
+    private SemesterDto findSemesterById(@PathVariable long id) throws NotFoundException {
         return semesterMapper.toSemesterDto(semesterService.findById(id));
     }
 
-    @GetMapping("/{ids}")
-    private List<SemesterDto> findByIds(@PathVariable Set<Long> ids) {
-        return semesterMapper.toSemesterDto(semesterService.findById(ids));
-    }
-
     @PostMapping
-    private SemesterDto create(@RequestBody SemesterDto semesterDto) throws NotFoundException, BadArgumentException {
+    private SemesterDto createSemester(@RequestBody SemesterDto semesterDto) throws NotFoundException, BadArgumentException {
         return semesterMapper.toSemesterDto(semesterService.create(semesterDto));
     }
 
     @PutMapping("/{id}")
-    private SemesterDto modify(@PathVariable long id, @RequestBody SemesterDto semesterDto) throws NotFoundException, BadArgumentException {
+    private SemesterDto modifySemester(@PathVariable long id, @RequestBody SemesterDto semesterDto) throws NotFoundException, BadArgumentException {
         Semester semester = semesterService.findById(id);
         return semesterMapper.toSemesterDto(semesterService.modify(semester, semesterDto));
     }
 
     @DeleteMapping("/{id}")
-    private Map<String, Boolean> delete(@PathVariable long id) throws NotFoundException {
+    private Map<String, Boolean> deleteSemester(@PathVariable long id) throws NotFoundException {
         Semester semester = semesterService.findById(id);
         semesterService.delete(semester);
         return Collections.singletonMap("deleted", true);

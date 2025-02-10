@@ -45,7 +45,7 @@ public class GroupService {
             Assert.notEmpty(groupDto.studentIds(), "group studentIds cannot be empty");
             List<Student> students = studentRepository.findAllById(groupDto.studentIds());
             Assert.notEmpty(students, "group teachers cannot be empty");
-            Group group = new Group(null, groupDto.name(), null, null);
+            Group group = new Group(null, groupDto.name());
             students.forEach(student -> student.setGroup(group));
             group.setStudents(students);
             return group;
@@ -59,13 +59,13 @@ public class GroupService {
         Group newgroup = validateGroupDtoAndCreate(groupDto);
         group.setName(newgroup.getName());
         group.setStudents(newgroup.getStudents());
-        group.setAcademicSemesters(newgroup.getAcademicSemesters());
+        group.setAcademicClasses(newgroup.getAcademicClasses());
         return groupRepository.save(group);
     }
 
     public void delete(Group group) {
         group.setStudents(null);
-        group.setAcademicSemesters(null);
+        group.setAcademicClasses(null);
         groupRepository.delete(group);
     }
 }
