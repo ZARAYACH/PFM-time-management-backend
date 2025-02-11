@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.multiplatform</groupId>
     <artifactId>time-management-backend</artifactId>
-    <version>0.1.5-SNAPSHOT</version>
+    <version>1.0.0</version>
 
 
     <name>time-management-backend</name>
