@@ -1,11 +1,15 @@
 package com.multiplatform.time_management_backend.room.model;
 
 import com.multiplatform.time_management_backend.department.model.Department;
+import com.multiplatform.time_management_backend.reservation.modal.Reservation;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -24,8 +28,11 @@ public class ClassRoom {
     private Long capacity;
     private boolean amphie;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Department department;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "classroom")
+    private List<Reservation> reservations = new ArrayList<>();
 
     public enum Type {
         TP, COURSE, SEMINAR_ROOM

@@ -1,5 +1,6 @@
 package com.multiplatform.time_management_backend.user.model;
 
+import com.multiplatform.time_management_backend.reservation.modal.Reservation;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,9 +40,6 @@ public abstract class User implements UserDetails {
     private String lastName;
     private LocalDate birthDate;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
-
     @CreationTimestamp
     private LocalDateTime createdAt;
 
@@ -51,19 +49,21 @@ public abstract class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Session> sessions = new ArrayList<>();
 
-    public User(Long id, String email, String password, String firstName, String lastName, LocalDate birthDate, Role role) {
+    @OneToMany(mappedBy = "reservedBy", cascade = CascadeType.ALL)
+    private List<Reservation> reservations = new ArrayList<>();
+
+    public User(Long id, String email, String password, String firstName, String lastName, LocalDate birthDate) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
-        this.role = role;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + this.role.toString()));
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + this.getRole()));
     }
 
     @Override
@@ -91,6 +91,16 @@ public abstract class User implements UserDetails {
         return UserDetails.super.isEnabled();
     }
 
+
+    public Role getRole() {
+        if (this instanceof Admin) {
+            return Role.ADMIN;
+        }
+        if (this instanceof Teacher) {
+            return Role.TEACHER;
+        }
+        return Role.STUDENT;
+    }
     public void addSession(Session session) {
         this.sessions.add(session);
     }

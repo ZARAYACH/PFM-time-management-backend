@@ -32,7 +32,13 @@ public class TokensController {
     private Map<String, String> refreshToken(HttpServletRequest request, HttpServletResponse response) throws NotFoundException {
 
         String refreshToken = jwtService.extractRefreshToken(request);
-        DecodedJWT decodedRefreshToken = jwtService.validateRefreshToken(refreshToken);
+        DecodedJWT decodedRefreshToken;
+        try {
+            decodedRefreshToken = jwtService.validateRefreshToken(refreshToken);
+        } catch (Exception e) {
+            response.addCookie(jwtService.createRefreshTokenCookie(null, request.isSecure()));
+            throw e;
+        }
         UserDetails userDetails = userService.findByEmail(decodedRefreshToken.getSubject());
 
         String token = null;

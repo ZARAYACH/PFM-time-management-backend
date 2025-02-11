@@ -25,32 +25,29 @@ public class DepartmentController {
     private final DepartmentService departmentService;
 
     @GetMapping
-    private List<DepartmentDto> list() {
+    private List<DepartmentDto> listDepartment() {
         return departmentMapper.toDepartmentDto(departmentService.list());
     }
 
     @GetMapping("/{id}")
-    private DepartmentDto findById(@PathVariable long id) throws NotFoundException {
+    private DepartmentDto findDepartmentById(@PathVariable long id) throws NotFoundException {
         return departmentMapper.toDepartmentDto(departmentService.findById(id));
     }
-    @GetMapping("/{ids}")
-    private List<DepartmentDto> findByIds(@PathVariable Set<Long> ids) {
-        return departmentMapper.toDepartmentDto(departmentService.findById(ids));
-    }
+
 
     @PostMapping
-    private DepartmentDto create(@RequestBody DepartmentDto departmentDto) throws NotFoundException, BadArgumentException {
+    private DepartmentDto createDepartment(@RequestBody DepartmentDto departmentDto) throws NotFoundException, BadArgumentException {
         return departmentMapper.toDepartmentDto(departmentService.create(departmentDto));
     }
 
     @PutMapping("/{id}")
-    private DepartmentDto modify(@PathVariable long id, @RequestBody DepartmentDto departmentDto) throws NotFoundException, BadArgumentException {
+    private DepartmentDto modifyDepartment(@PathVariable long id, @RequestBody DepartmentDto departmentDto) throws NotFoundException, BadArgumentException {
         Department department = departmentService.findById(id);
         return departmentMapper.toDepartmentDto(departmentService.modify(department, departmentDto));
     }
 
     @DeleteMapping("/{id}")
-    private Map<String, Boolean> delete(@PathVariable long id) throws NotFoundException {
+    private Map<String, Boolean> deleteDepartment(@PathVariable long id) throws NotFoundException {
         Department department = departmentService.findById(id);
         departmentService.delete(department);
         return Collections.singletonMap("deleted", true);

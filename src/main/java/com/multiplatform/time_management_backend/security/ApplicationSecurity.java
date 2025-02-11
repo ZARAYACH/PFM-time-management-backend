@@ -2,6 +2,7 @@ package com.multiplatform.time_management_backend.security;
 
 import com.multiplatform.time_management_backend.security.jwt.JwtService;
 import com.multiplatform.time_management_backend.security.service.CustomLogoutHandler;
+import com.multiplatform.time_management_backend.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,17 +34,25 @@ public class ApplicationSecurity {
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomLogoutHandler  customLogoutHandler;
-    //TODO : implement endpoint to renew access oken using refresh token and also add session so we can add logout
+
     @Bean
     public SecurityFilterChain configure(final HttpSecurity http) throws Exception {
         return http.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) -> authorize
+
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/users", "/api/v1/tokens").permitAll()
                         .requestMatchers(HttpMethod.GET, "/.well-known/jwks.json").permitAll()
+
                         .requestMatchers("/api/v1/api-docs/**", "/swagger-ui.html", "/swagger-ui/*").permitAll()
-                        .anyRequest().authenticated())
+
+                        .requestMatchers("/api/v1/reservations/**").hasAnyRole(User.Role.ADMIN.toString(), User.Role.TEACHER.toString())
+
+                        .requestMatchers(HttpMethod.GET, "/api/v1/time-tables").hasAnyRole(User.Role.ADMIN.toString(), User.Role.TEACHER.toString(), User.Role.STUDENT.toString())
+
+                        .anyRequest().hasRole(User.Role.ADMIN.toString()))
+
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exceptionableConfigure ->
                         exceptionableConfigure.accessDeniedHandler(customAccessDeniedHandler)

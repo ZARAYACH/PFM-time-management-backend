@@ -1,9 +1,8 @@
 package com.multiplatform.time_management_backend.timetable.modal;
 
-public record TimeSlot(
-        Long teacherId,
-        Long courseId,
-        Long classRoomId,
-        Long groupId) {
+import jakarta.validation.constraints.NotNull;
 
+public record TimeSlot(
+        @NotNull Long classRoomId,
+        @NotNull Long academicClassId) {
 }

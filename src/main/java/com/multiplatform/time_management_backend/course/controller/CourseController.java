@@ -26,33 +26,33 @@ public class CourseController {
     private final CourseService courseService;
 
     @GetMapping
-    private List<CourseDto> list() {
+    private List<CourseDto> listCourse() {
         return courseMapper.toCourseDto(courseService.list());
     }
 
     @GetMapping("/{id}")
-    private CourseDto findById(@PathVariable long id) throws NotFoundException {
+    private CourseDto findCourseById(@PathVariable long id) throws NotFoundException {
         return courseMapper.toCourseDto(courseService.findById(id));
     }
 
     @GetMapping("/{ids}")
-    private List<CourseDto> findByIds(@PathVariable Set<Long> ids) {
+    private List<CourseDto> findCourseByIds(@RequestParam Set<Long> ids) {
         return courseMapper.toCourseDto(courseService.findById(ids));
     }
 
     @PostMapping
-    private CourseDto create(@RequestBody CourseDto courseDto) throws NotFoundException, BadArgumentException {
+    private CourseDto createCourse(@RequestBody CourseDto courseDto) throws NotFoundException, BadArgumentException {
         return courseMapper.toCourseDto(courseService.create(courseDto));
     }
 
     @PutMapping("/{id}")
-    private CourseDto modify(@PathVariable long id, @RequestBody CourseDto courseDto) throws NotFoundException, BadArgumentException {
+    private CourseDto modifyCourse(@PathVariable long id, @RequestBody CourseDto courseDto) throws NotFoundException, BadArgumentException {
         Course course = courseService.findById(id);
         return courseMapper.toCourseDto(courseService.modify(course, courseDto));
     }
 
     @DeleteMapping("/{id}")
-    private Map<String, Boolean> delete(@PathVariable long id) throws NotFoundException {
+    private Map<String, Boolean> deleteCourse(@PathVariable long id) throws NotFoundException {
         Course course = courseService.findById(id);
         courseService.delete(course);
         return Collections.singletonMap("deleted", true);

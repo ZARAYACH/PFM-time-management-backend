@@ -1,6 +1,7 @@
 package com.multiplatform.time_management_backend.group.model;
 
-import com.multiplatform.time_management_backend.semester.modal.AcademicSemester;
+import com.multiplatform.time_management_backend.academicclass.modal.AcademicClass;
+import com.multiplatform.time_management_backend.timetable.modal.TimeTable;
 import com.multiplatform.time_management_backend.user.model.Student;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -15,8 +17,12 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Group {
+
+    public Group(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,9 +31,12 @@ public class Group {
     private String name;
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
-    private List<Student> students;
+    private List<Student> students = new ArrayList<>();
 
-    @OneToMany(mappedBy = "group")
-    private List<AcademicSemester> academicSemesters;
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
+    private List<AcademicClass> academicClasses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
+    private List<TimeTable> timeTables = new ArrayList<>() ;
 
 }
