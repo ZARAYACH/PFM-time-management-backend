@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,7 +30,7 @@ public class Department {
 
 
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
-    private List<ClassRoom> classRooms;
+    private List<ClassRoom> classRooms = new ArrayList<>();
 
 
 }

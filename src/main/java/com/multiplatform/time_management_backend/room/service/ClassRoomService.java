@@ -54,7 +54,7 @@ public class ClassRoomService {
     }
 
     public ClassRoom validateRoomDtoAndCreate(ClassRoomDto classRoomDto) throws NotFoundException, BadArgumentException {
-        ClassRoom classRoom = new ClassRoom(null, classRoomDto.name(), classRoomDto.number(), classRoomDto.type(), classRoomDto.capacity(), classRoomDto.amphie(), null);
+        ClassRoom classRoom = new ClassRoom(null, classRoomDto.name(), classRoomDto.number(), classRoomDto.type(), classRoomDto.capacity(), classRoomDto.amphie(), null,null);
         try {
             Assert.hasText(classRoomDto.number(), "ClassRoom number cannot be null");
             Assert.isTrue(classRoomDto.capacity() > 0, "ClassRoom capacity cannot less than 0");

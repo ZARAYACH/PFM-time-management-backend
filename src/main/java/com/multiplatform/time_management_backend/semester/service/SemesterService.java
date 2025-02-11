@@ -39,10 +39,13 @@ public class SemesterService {
     private Semester validateSemesterDtoAndCreate(SemesterDto semesterDto) throws BadArgumentException {
         try {
             Assert.notNull(semesterDto.type(), "Semester type cannot be null");
+            Assert.notNull(semesterDto.startDate(), "Semester start date cannot be null");
+            Assert.notNull(semesterDto.endDate(), "Semester end date cannot be null");
+            Assert.isTrue(semesterDto.startDate().isBefore(semesterDto.endDate()), "Start date cannot be before end date");
         } catch (IllegalArgumentException e) {
             throw new BadArgumentException(e);
         }
-        return new Semester(semesterDto.type(), semesterDto.year());
+        return new Semester(semesterDto.type(), semesterDto.year(), semesterDto.startDate(), semesterDto.endDate());
     }
 
 

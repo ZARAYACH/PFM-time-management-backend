@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,21 +22,28 @@ public class Semester {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Enumerated(EnumType.STRING)
     private Type type;
     private int year;
+    @Column(nullable = false)
+    private LocalDate startDate;
+    @Column(nullable = false)
+    private LocalDate endDate;
 
     @OneToMany(mappedBy = "semester", cascade = CascadeType.ALL)
-    private List<AcademicClass> academicClass;
+    private List<AcademicClass> academicClass = new ArrayList<>();
 
     @OneToMany(mappedBy = "semester", cascade = CascadeType.ALL)
-    private List<TimeTable> timeTables;
+    private List<TimeTable> timeTables = new ArrayList<>() ;
 
     public enum Type {
         FALL, SPRING
     }
 
-    public Semester(Type type, int year) {
+    public Semester(Type type, int year, LocalDate startDate, LocalDate endDate) {
         this.type = type;
         this.year = year;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 }

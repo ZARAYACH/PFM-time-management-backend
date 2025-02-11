@@ -1,5 +1,6 @@
 package com.multiplatform.time_management_backend.user.model;
 
+import com.multiplatform.time_management_backend.reservation.modal.Reservation;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -51,6 +52,9 @@ public abstract class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Session> sessions = new ArrayList<>();
 
+    @OneToMany(mappedBy = "reservedBy", cascade = CascadeType.ALL)
+    private List<Reservation> reservations = new ArrayList<>();
+
     public User(Long id, String email, String password, String firstName, String lastName, LocalDate birthDate, Role role) {
         this.id = id;
         this.email = email;
@@ -100,5 +104,8 @@ public abstract class User implements UserDetails {
         @FieldNameConstants.Include STUDENT,
         @FieldNameConstants.Include TEACHER,
         @FieldNameConstants.Include ADMIN;
+    }
+    public void removeReservation(Reservation reservation) {
+        this.reservations.remove(reservation);
     }
 }

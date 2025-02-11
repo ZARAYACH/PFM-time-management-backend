@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class Student extends User {
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Group group;
 
     //Please make sure that the password is encrypted before it is passed in here

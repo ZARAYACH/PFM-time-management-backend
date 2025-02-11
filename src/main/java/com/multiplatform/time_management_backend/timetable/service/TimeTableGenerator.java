@@ -3,10 +3,8 @@ package com.multiplatform.time_management_backend.timetable.service;
 import com.multiplatform.time_management_backend.academicclass.modal.AcademicClass;
 import com.multiplatform.time_management_backend.academicclass.repository.AcademicClassRepository;
 import com.multiplatform.time_management_backend.course.model.Course;
-import com.multiplatform.time_management_backend.department.repository.TeacherRepository;
 import com.multiplatform.time_management_backend.exeption.BadArgumentException;
 import com.multiplatform.time_management_backend.group.model.Group;
-import com.multiplatform.time_management_backend.group.repository.GroupRepository;
 import com.multiplatform.time_management_backend.room.model.ClassRoom;
 import com.multiplatform.time_management_backend.room.service.ClassRoomService;
 import com.multiplatform.time_management_backend.semester.modal.Semester;
@@ -19,7 +17,6 @@ import com.multiplatform.time_management_backend.timetable.service.geneticalgori
 import com.multiplatform.time_management_backend.timetable.service.geneticalgorithm.Data;
 import com.multiplatform.time_management_backend.timetable.service.geneticalgorithm.Generator;
 import com.multiplatform.time_management_backend.user.model.Teacher;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -98,10 +95,10 @@ public class TimeTableGenerator {
             if (groupTimeTableDtoMap.get(cls.getGroup()) == null) {
                 groupTimeTableDtoMap.put(cls.getGroup(), initializeTimeTableDays());
                 groupTimeTableDtoMap.get(cls.getGroup())
-                        .get(day).timeSlots().put(Slot.get(period), new TimeSlot(cls.getTeacher().getId(), cls.getCourse().getId(), (long) roomID, cls.getGroup().getId()));
+                        .get(day).timeSlots().put(Slot.get(period), new TimeSlot((long) roomID, cls.getId()));
             } else {
                 groupTimeTableDtoMap.get(cls.getGroup())
-                        .get(day).timeSlots().put(Slot.get(period), new TimeSlot(cls.getTeacher().getId(), cls.getCourse().getId(), (long) roomID, cls.getGroup().getId()));
+                        .get(day).timeSlots().put(Slot.get(period), new TimeSlot((long) roomID, cls.getId()));
             }
             academicClassRepository.saveAndFlush(cls);
         }
