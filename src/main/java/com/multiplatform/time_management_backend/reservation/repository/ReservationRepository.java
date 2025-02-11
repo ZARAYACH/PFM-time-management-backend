@@ -1,6 +1,7 @@
 package com.multiplatform.time_management_backend.reservation.repository;
 
 import com.multiplatform.time_management_backend.reservation.modal.Reservation;
+import com.multiplatform.time_management_backend.semester.modal.Semester;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -16,4 +17,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findConflictingReservations(Long classroomId, LocalDateTime startTime, LocalDateTime endTime);
 
     List<Reservation> findByParentReservationAndStartTimeAfter(Reservation existingReservation, LocalDateTime now);
+
+    List<Reservation> findAllByAcademicClass_Semester(Semester semester);
 }

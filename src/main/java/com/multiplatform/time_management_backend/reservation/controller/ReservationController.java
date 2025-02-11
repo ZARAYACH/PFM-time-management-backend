@@ -1,10 +1,13 @@
-package com.multiplatform.time_management_backend.reservation;
+package com.multiplatform.time_management_backend.reservation.controller;
 
 import com.multiplatform.time_management_backend.exeption.BadArgumentException;
 import com.multiplatform.time_management_backend.exeption.NotFoundException;
+import com.multiplatform.time_management_backend.reservation.ReservationMapper;
 import com.multiplatform.time_management_backend.reservation.modal.Reservation;
 import com.multiplatform.time_management_backend.reservation.modal.dto.ReservationDto;
 import com.multiplatform.time_management_backend.reservation.service.ReservationService;
+import com.multiplatform.time_management_backend.semester.modal.Semester;
+import com.multiplatform.time_management_backend.semester.service.SemesterService;
 import com.multiplatform.time_management_backend.user.model.User;
 import com.multiplatform.time_management_backend.user.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RequestMapping("/api/v1/reservations")
 @RestController
@@ -26,10 +30,19 @@ public class ReservationController {
     private final ReservationService reservationService;
     private final ReservationMapper reservationMapper;
     private final UserService userService;
+    private final SemesterService semesterService;
 
     @GetMapping
-    public List<ReservationDto> getAllReservations() {
+    public List<ReservationDto> getAllReservations(@RequestParam(required = false) Long semesterId) throws NotFoundException {
+        if (semesterId != null) {
+            Semester semester = semesterService.findById(semesterId);
+            return reservationMapper.toReservationDto(reservationService.list(semester));
+        }
         return reservationMapper.toReservationDto(reservationService.list());
+    }
+    @GetMapping("/{id}")
+    public ReservationDto getReservationById(@PathVariable long id) throws NotFoundException {
+        return reservationMapper.toReservationDto(reservationService.findById(id));
     }
 
     @PostMapping
@@ -46,11 +59,11 @@ public class ReservationController {
         return reservationMapper.toReservationDto(reservationService.modify(reservation, reservationDto, updateRecurrences));
     }
 
-    @DeleteMapping("{id}")
-    public Map<String, Boolean> deleteReservation(@PathVariable Long id,
+    @DeleteMapping("{ids}")
+    public Map<String, Boolean> deleteReservations(@PathVariable Set<Long> ids,
                                                   @RequestParam(defaultValue = "false") boolean deleteRecurrences) throws BadArgumentException, NotFoundException {
-        Reservation reservation = reservationService.findById(id);
-        reservationService.delete(reservation, deleteRecurrences);
+        List<Reservation> reservations = reservationService.findById(ids);
+        reservationService.delete(reservations, deleteRecurrences);
         return Collections.singletonMap("deleted", true);
     }
 

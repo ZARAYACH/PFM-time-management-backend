@@ -1,6 +1,7 @@
 package com.multiplatform.time_management_backend.timetable.modal;
 
 import com.multiplatform.time_management_backend.group.model.Group;
+import com.multiplatform.time_management_backend.reservation.modal.Reservation;
 import com.multiplatform.time_management_backend.semester.modal.Semester;
 import com.multiplatform.time_management_backend.timetable.TimeTableConverter;
 import jakarta.persistence.*;
@@ -13,6 +14,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @Entity

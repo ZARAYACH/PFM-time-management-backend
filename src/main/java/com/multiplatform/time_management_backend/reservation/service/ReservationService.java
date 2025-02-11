@@ -25,10 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,7 +39,9 @@ public class ReservationService {
     public List<Reservation> list() {
         return reservationRepository.findAll();
     }
-
+    public List<Reservation> list(Semester semester) {
+        return reservationRepository.findAllByAcademicClass_Semester(semester);
+    }
     public Reservation create(ReservationDto reservationDto, User user) throws BadArgumentException {
         Reservation reservation = validateReservationDtoAndCreate(reservationDto);
         reservation.setReservedBy(user);
@@ -114,7 +113,7 @@ public class ReservationService {
 
         int count = 0;
         long limitCount;
-        int recurrenceDurationInMonths = 12;
+        int recurrenceDurationInMonths = 4;
 
         if (reservation.getRecurrenceCount() != null) {
             limitCount = reservation.getRecurrenceCount();
@@ -122,17 +121,19 @@ public class ReservationService {
             LocalDateTime nowPlusLimit = LocalDateTime.now().plusMonths(recurrenceDurationInMonths);
             LocalDateTime recurrenceEndDate = reservation.getRecurrenceEndDate();
 
-            boolean hasValidEndDate = recurrenceEndDate != null && recurrenceEndDate.isBefore(nowPlusLimit);
+            boolean hasValidEndDate = recurrenceEndDate != null &&
+                    recurrenceEndDate.isBefore(nowPlusLimit) &&
+                    recurrenceEndDate.isAfter(reservation.getStartTime());
 
             limitCount = switch (reservation.getType()) {
                 case DAILY -> hasValidEndDate ?
-                        ChronoUnit.DAYS.between(recurrenceEndDate, LocalDateTime.now()) :
-                        recurrenceDurationInMonths;
+                        ChronoUnit.DAYS.between(reservation.getStartTime(), recurrenceEndDate) :
+                        26 * recurrenceDurationInMonths;
                 case WEEKLY -> hasValidEndDate ?
-                        ChronoUnit.WEEKS.between(recurrenceEndDate, LocalDateTime.now()) :
+                        ChronoUnit.WEEKS.between(reservation.getStartTime(), recurrenceEndDate) :
                         4 * recurrenceDurationInMonths;
                 case MONTHLY -> hasValidEndDate ?
-                        ChronoUnit.MONTHS.between(recurrenceEndDate, LocalDateTime.now()) :
+                        ChronoUnit.MONTHS.between(reservation.getStartTime(), recurrenceEndDate) :
                         recurrenceDurationInMonths;
                 default -> 0;
             };
@@ -155,7 +156,6 @@ public class ReservationService {
                 default:
                     return Collections.emptyList();
             }
-
             if (nextStart.isAfter(reservation.getStartTime().plusMonths(recurrenceDurationInMonths))) {
                 break;
             }
@@ -206,17 +206,22 @@ public class ReservationService {
         return reservationRepository.save(existingReservation);
     }
 
-    public void delete(Reservation reservation, boolean deleteRecurrences) throws BadArgumentException {
+    public void delete(List<Reservation> reservations, boolean deleteRecurrences) throws BadArgumentException {
         if (!deleteRecurrences) {
-            reservationRepository.saveAllAndFlush(reservation.getChildReservations()
-                    .stream().peek(childReservation -> childReservation.setParentReservation(null)).collect(Collectors.toSet()));
-            reservation.setChildReservations(null);
+            reservations.forEach(reservation -> reservation.setChildReservations(reservation.getChildReservations()
+                    .stream()
+                    .peek(childReservation -> childReservation.setParentReservation(null))
+                    .peek(reservation1 -> reservation.setChildReservations(null))
+                    .toList()));
         }
-        reservation.setAcademicClass(null);
-        reservation.setParentReservation(null); ;
-        reservation.setClassroom(null);
-        reservation.setReservedBy(null);
-        reservationRepository.delete(reservation);
+        reservations.forEach(reservation -> {
+            reservation.setAcademicClass(null);
+            reservation.setParentReservation(null);
+            reservation.setClassroom(null);
+            reservation.setReservedBy(null);
+        });
+
+        reservationRepository.deleteAll(reservations);
     }
 
     public Reservation findById(Long id) throws NotFoundException {
@@ -224,29 +229,32 @@ public class ReservationService {
                 .orElseThrow(() -> new NotFoundException("Reservation #" + id + " Not found"));
     }
 
+    public List<Reservation> findById(Set<Long> ids) throws NotFoundException {
+        return reservationRepository.findAllById(ids);
+    }
+
     public List<Reservation> reserveSemester(@NotNull Semester semester, User user) throws NotFoundException {
         try {
-            Assert.notEmpty(semester.getTimeTables(), "Semester must not be nullor empty");
+            Assert.notEmpty(semester.getTimeTables(), "Semester must not be null nor empty");
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e);
         }
         List<Reservation> reservationList = new ArrayList<>();
         List<TimeTable> timeTables = semester.getTimeTables();
-
+        reservationRepository.deleteAll(reservationRepository.findAllByAcademicClass_Semester(semester));
         for (TimeTable timeTable : timeTables) {
-            reservationList.addAll(reserveTimeTable(timeTable, semester.getEndDate()));
+            reservationList.addAll(reserveTimeTable(timeTable, semester.getStartDate(), semester.getEndDate()));
         }
         return reservationRepository.saveAllAndFlush(reservationList.stream()
                 .peek(reservation -> reservation.setReservedBy(user))
                 .collect(Collectors.toSet()));
     }
 
-    private List<Reservation> reserveTimeTable(TimeTable timeTable, LocalDate recurrenceEndDate) throws NotFoundException {
+    private List<Reservation> reserveTimeTable(TimeTable timeTable, LocalDate startDate, LocalDate recurrenceEndDate) throws NotFoundException {
         List<Reservation> reservations = new ArrayList<>();
         for (Map.Entry<DayOfWeek, Day> dayEntry : timeTable.getDays().entrySet()) {
-            LocalDateTime nextDay = LocalDateTime.now()
-                    .with(TemporalAdjusters.next(dayEntry.getKey()))
-                    .withHour(0).withMinute(0).withSecond(0).withNano(0);
+            LocalDateTime nextDay = startDate
+                    .with(TemporalAdjusters.next(dayEntry.getKey())).atStartOfDay();
             for (Map.Entry<Slot, TimeSlot> timeSlotEntry : dayEntry.getValue().timeSlots().entrySet()) {
 
                 ClassRoom classRoom = classRoomRepository.findById(timeSlotEntry.getValue().classRoomId())
@@ -260,8 +268,8 @@ public class ReservationService {
                         .endTime(timeSlotEntry.getKey().getEndTime().atDate(nextDay.toLocalDate()))
                         .recurrenceEndDate(recurrenceEndDate.atStartOfDay())
                         .type(Reservation.Type.WEEKLY).build();
+                reservation.setChildReservations(createLimitedRecurringReservations(reservation));
                 reservations.add(reservation);
-                reservations.addAll(createLimitedRecurringReservations(reservation));
             }
         }
         return reservations;
