@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "semester")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,9 +23,12 @@ public class Semester {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Enumerated(EnumType.STRING)
-    private Type type;
-    private int year;
+    @Column(nullable = false)
+    private Type type = Type.FALL;
+    @Column(name = "academic_year", nullable = false)
+    private Integer year;
     @Column(nullable = false)
     private LocalDate startDate;
     @Column(nullable = false)

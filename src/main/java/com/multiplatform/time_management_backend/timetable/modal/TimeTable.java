@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @Entity
-@Table(uniqueConstraints = {
+@Table(name = "time_table",uniqueConstraints = {
         @UniqueConstraint(columnNames = {"semester_id", "group_id"})
 })
 @Getter
