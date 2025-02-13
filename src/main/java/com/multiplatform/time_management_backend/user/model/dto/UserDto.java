@@ -17,13 +17,15 @@ public record UserDto(
         User.Role role
 ) {
     public record PostUserDto(
+            Long id,
             @NotBlank
             String email,
             @NotBlank
             String password,
             String firstName,
             String lastName,
-            LocalDate birthDate
+            LocalDate birthDate,
+            @NotNull User.Role role
     ) {
     }
 }

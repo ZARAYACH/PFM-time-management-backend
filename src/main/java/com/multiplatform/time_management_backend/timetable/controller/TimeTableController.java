@@ -32,10 +32,16 @@ public class TimeTableController {
         return timeTableMapper.toTimeTableDto(timeTableService.list());
     }
 
+
+    @GetMapping("/{id}")
+    private TimeTableDto findTimeTableById(@PathVariable long id) throws NotFoundException {
+        return timeTableMapper.toTimeTableDto(timeTableService.findById(id));
+    }
+
     @PostMapping
-    private TimeTableDto createTimeTable(@RequestBody TimeTableDto timeTableDto) {
-        //TODO : implement later
-        return null;
+    private TimeTableDto createTimeTable(@RequestBody TimeTableDto timeTableDto) throws NotFoundException {
+        return timeTableMapper.toTimeTableDto(timeTableService.create(timeTableDto));
+
     }
 
     @PutMapping("/{id}")

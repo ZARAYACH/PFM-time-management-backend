@@ -34,11 +34,12 @@ public class CustomLogoutHandler implements LogoutHandler {
 
             response.addCookie(jwtService.createAccessTokenCookie(null, request.isSecure()));
             response.addCookie(jwtService.createRefreshTokenCookie(null, request.isSecure()));
+
             response.setStatus(HttpServletResponse.SC_OK);
-            response.sendRedirect("/login?logout");
 
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            response.addCookie(jwtService.createAccessTokenCookie(null, request.isSecure()));
+            response.addCookie(jwtService.createRefreshTokenCookie(null, request.isSecure()));
             throw new AuthenticationServiceException(e.getMessage(), e);
         }
     }

@@ -7,6 +7,7 @@ import com.multiplatform.time_management_backend.user.model.Session;
 import com.multiplatform.time_management_backend.user.model.User;
 import com.multiplatform.time_management_backend.user.repository.SessionRepository;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.cache.CacheException;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
@@ -41,13 +42,15 @@ public class SessionService {
     public void terminate(Session session) {
         session.setExpiredAt(LocalDateTime.now());
         sessionRepository.save(session);
-        if (sessionCache == null) {
-            sessionCache = cacheManager.getCache(CustomRedisCacheConfigurations.SESSION_IDS_CACHE_NAME);
+        try {
+            if (sessionCache != null) {
+                sessionCache.put(session.getId(), session.getExpiredAt()
+                        .toEpochSecond(ZoneOffset.systemDefault().getRules().getOffset(Instant.now())));
+            }
+        } catch (Exception ignored) {
         }
-        if (sessionCache != null) {
-            sessionCache.put(session.getId(), session.getExpiredAt()
-                    .toEpochSecond(ZoneOffset.systemDefault().getRules().getOffset(Instant.now())));
-        }
+
+
     }
 
     public void extendSessionExpiration(@NotNull Session session, long seconds) throws BadArgumentException {

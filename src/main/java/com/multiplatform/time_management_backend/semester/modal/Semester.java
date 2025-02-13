@@ -1,10 +1,8 @@
 package com.multiplatform.time_management_backend.semester.modal;
 
 import com.multiplatform.time_management_backend.academicclass.modal.AcademicClass;
-import com.multiplatform.time_management_backend.course.model.Course;
 import com.multiplatform.time_management_backend.timetable.modal.TimeTable;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -34,17 +32,17 @@ public class Semester {
     @Column(nullable = false)
     private LocalDate endDate;
 
-    @OneToMany(mappedBy = "semester", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "semester", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AcademicClass> academicClass = new ArrayList<>();
 
-    @OneToMany(mappedBy = "semester", cascade = CascadeType.ALL)
-    private List<TimeTable> timeTables = new ArrayList<>() ;
+    @OneToMany(mappedBy = "semester", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TimeTable> timeTables = new ArrayList<>();
 
     public enum Type {
         FALL, SPRING
     }
 
-    public Semester(Type type, int year, LocalDate startDate, LocalDate endDate) {
+    public Semester(Type type, Integer year, LocalDate startDate, LocalDate endDate) {
         this.type = type;
         this.year = year;
         this.startDate = startDate;

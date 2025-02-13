@@ -21,33 +21,33 @@ import java.util.Map;
 public class AcademicClassController {
 
     private final AcademicClassMapper academicClassMapper;
-    private final AcademicClassService academicSemesterService;
+    private final AcademicClassService academicClassService;
 
     @GetMapping
-    private List<AcademicClassDto> listAcademicSemester() {
-        return academicClassMapper.toAcademicClassDto(academicSemesterService.list());
+    private List<AcademicClassDto> listAcademicClass() {
+        return academicClassMapper.toAcademicClassDto(academicClassService.list());
     }
 
     @GetMapping("/{id}")
-    private AcademicClassDto findAcademicSemesterById(@PathVariable long id) throws NotFoundException {
-        return academicClassMapper.toAcademicClassDto(academicSemesterService.findById(id));
+    private AcademicClassDto findAcademicClassById(@PathVariable long id) throws NotFoundException {
+        return academicClassMapper.toAcademicClassDto(academicClassService.findById(id));
     }
 
     @PostMapping
-    private AcademicClassDto createAcademicSemester(@RequestBody AcademicClassDto academicClassDto) throws NotFoundException, BadArgumentException {
-        return academicClassMapper.toAcademicClassDto(academicSemesterService.create(academicClassDto));
+    private AcademicClassDto createAcademicClass(@RequestBody AcademicClassDto academicClassDto) throws NotFoundException, BadArgumentException {
+        return academicClassMapper.toAcademicClassDto(academicClassService.create(academicClassDto));
     }
 
     @PutMapping("/{id}")
-    private AcademicClassDto modifyAcademicSemester(@PathVariable long id, @RequestBody AcademicClassDto academicClassDto) throws NotFoundException, BadArgumentException {
-        AcademicClass academicClass = academicSemesterService.findById(id);
-        return academicClassMapper.toAcademicClassDto(academicSemesterService.modify(academicClass, academicClassDto));
+    private AcademicClassDto modifyAcademicClass(@PathVariable long id, @RequestBody AcademicClassDto academicClassDto) throws NotFoundException, BadArgumentException {
+        AcademicClass academicClass = academicClassService.findById(id);
+        return academicClassMapper.toAcademicClassDto(academicClassService.modify(academicClass, academicClassDto));
     }
 
     @DeleteMapping("/{id}")
-    private Map<String, Boolean> deleteAcademicSemester(@PathVariable long id) throws NotFoundException {
-        AcademicClass academicClass = academicSemesterService.findById(id);
-        academicSemesterService.delete(academicClass);
+    private Map<String, Boolean> deleteAcademicClass(@PathVariable long id) throws NotFoundException {
+        AcademicClass academicClass = academicClassService.findById(id);
+        academicClassService.delete(academicClass);
         return Collections.singletonMap("deleted", true);
     }
 }

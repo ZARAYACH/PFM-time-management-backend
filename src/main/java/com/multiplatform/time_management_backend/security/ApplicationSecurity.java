@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -18,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -33,7 +35,7 @@ public class ApplicationSecurity {
     private final UserDetailsService userDetailsService;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-    private final CustomLogoutHandler  customLogoutHandler;
+    private final CustomLogoutHandler customLogoutHandler;
 
     @Bean
     public SecurityFilterChain configure(final HttpSecurity http) throws Exception {
@@ -42,7 +44,7 @@ public class ApplicationSecurity {
                 .authorizeHttpRequests((authorize) -> authorize
 
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/users", "/api/v1/tokens").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/signup", "/api/v1/tokens").permitAll()
                         .requestMatchers(HttpMethod.GET, "/.well-known/jwks.json").permitAll()
 
                         .requestMatchers("/api/v1/api-docs/**", "/swagger-ui.html", "/swagger-ui/*").permitAll()
@@ -50,7 +52,7 @@ public class ApplicationSecurity {
                         .requestMatchers("/api/v1/reservations/**").hasAnyRole(User.Role.ADMIN.toString(), User.Role.TEACHER.toString())
 
                         .requestMatchers(HttpMethod.GET, "/api/v1/time-tables").hasAnyRole(User.Role.ADMIN.toString(), User.Role.TEACHER.toString(), User.Role.STUDENT.toString())
-
+                        .requestMatchers("/logout").hasAnyRole(User.Role.ADMIN.toString(), User.Role.TEACHER.toString(), User.Role.STUDENT.toString())
                         .anyRequest().hasRole(User.Role.ADMIN.toString()))
 
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -61,6 +63,7 @@ public class ApplicationSecurity {
                 .logout(httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer
                         .logoutUrl("/logout")
                         .addLogoutHandler(customLogoutHandler)
+                        .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK)).permitAll()
                         .deleteCookies(JwtService.ACCESS_TOKEN_COOKIE_NAME,
                                 JwtService.REFRESH_TOKEN_COOKIE_NAME))
                 .build();

@@ -53,7 +53,6 @@ public class ReservationService {
         Reservation reservation = new Reservation();
         try {
             Assert.notNull(reservationDto.classroomId(), "Classroom cannot be null");
-            Assert.notNull(reservationDto.reservedBy(), "ReservedBy cannot be null");
             Assert.notNull(reservationDto.startTime(), "Start time cannot be null");
             Assert.notNull(reservationDto.endTime(), "End time cannot be null");
             Assert.isTrue(!reservationDto.startTime().isAfter(reservationDto.endTime()), "Start time must be before end time");

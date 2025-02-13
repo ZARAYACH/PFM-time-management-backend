@@ -42,7 +42,7 @@ public class ClassRoomService {
         ClassRoom newClassRoom = validateRoomDtoAndCreate(classRoomDto);
         classRoom.setName(newClassRoom.getName());
         classRoom.setCapacity(newClassRoom.getCapacity());
-        classRoom.setNumber(newClassRoom.getNumber());
+        classRoom.setClassNumber(newClassRoom.getClassNumber());
         classRoom.setAmphie(newClassRoom.isAmphie());
         classRoom.setDepartment(newClassRoom.getDepartment());
         return classRoomRepository.save(classRoom);
@@ -54,9 +54,9 @@ public class ClassRoomService {
     }
 
     public ClassRoom validateRoomDtoAndCreate(ClassRoomDto classRoomDto) throws NotFoundException, BadArgumentException {
-        ClassRoom classRoom = new ClassRoom(null, classRoomDto.name(), classRoomDto.number(), classRoomDto.type(), classRoomDto.capacity(), classRoomDto.amphie(), null,null);
+        ClassRoom classRoom = new ClassRoom(null, classRoomDto.name(), classRoomDto.classNumber(), classRoomDto.type(), classRoomDto.capacity(), classRoomDto.amphie(), null,null);
         try {
-            Assert.hasText(classRoomDto.number(), "ClassRoom number cannot be null");
+            Assert.hasText(classRoomDto.classNumber(), "ClassRoom classNumber cannot be null");
             Assert.isTrue(classRoomDto.capacity() > 0, "ClassRoom capacity cannot less than 0");
             if (classRoomDto.departmentId() != null) {
                 classRoom.setDepartment(departmentRepository.findById(classRoomDto.departmentId())
