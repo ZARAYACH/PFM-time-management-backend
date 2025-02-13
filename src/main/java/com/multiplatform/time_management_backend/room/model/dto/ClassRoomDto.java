@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 public record ClassRoomDto(
         @NotNull Long id,
         String name,
-        @NotBlank String number,
+        @NotBlank String classNumber,
         @NotNull Long capacity,
         @NotNull ClassRoom.Type type,
         boolean amphie,

@@ -22,7 +22,7 @@ public class ClassRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String number;
+    private String classNumber;
     @Enumerated(EnumType.STRING)
     private Type type;
     private Long capacity;

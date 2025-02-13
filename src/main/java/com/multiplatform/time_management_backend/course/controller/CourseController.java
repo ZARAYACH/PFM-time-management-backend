@@ -35,11 +35,6 @@ public class CourseController {
         return courseMapper.toCourseDto(courseService.findById(id));
     }
 
-    @GetMapping("/{ids}")
-    private List<CourseDto> findCourseByIds(@RequestParam Set<Long> ids) {
-        return courseMapper.toCourseDto(courseService.findById(ids));
-    }
-
     @PostMapping
     private CourseDto createCourse(@RequestBody CourseDto courseDto) throws NotFoundException, BadArgumentException {
         return courseMapper.toCourseDto(courseService.create(courseDto));

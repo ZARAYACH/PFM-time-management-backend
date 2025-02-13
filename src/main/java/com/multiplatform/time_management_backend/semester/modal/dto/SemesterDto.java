@@ -10,7 +10,7 @@ import java.time.Year;
 public record SemesterDto(
         @NotNull Long id,
         @NotNull Semester.Type type,
-        @NotNull int year,
+        @NotNull Integer year,
         LocalDate startDate,
         LocalDate endDate
 ) {

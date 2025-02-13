@@ -56,10 +56,15 @@ public class GroupService {
 
 
     public Group modify(Group group, GroupDto groupDto) throws BadArgumentException {
+
         Group newgroup = validateGroupDtoAndCreate(groupDto);
+        List<Student> student = newgroup.getStudents();
+
         group.setName(newgroup.getName());
         group.setStudents(newgroup.getStudents());
         group.setAcademicClasses(newgroup.getAcademicClasses());
+        student.forEach(student1 -> student1.setGroup(group));
+
         return groupRepository.save(group);
     }
 

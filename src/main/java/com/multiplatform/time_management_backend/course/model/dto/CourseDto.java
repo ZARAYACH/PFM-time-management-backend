@@ -9,7 +9,6 @@ import java.util.Set;
 public record CourseDto(
         @NotNull Long id,
         @NotBlank String name,
-        @NotBlank ClassRoom.Type classRoomType,
-        Set<Long> teacherIds
+        @NotBlank ClassRoom.Type classRoomType
 ) {
 }

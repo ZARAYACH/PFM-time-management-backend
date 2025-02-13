@@ -38,6 +38,8 @@ public class SemesterService {
 
     private Semester validateSemesterDtoAndCreate(SemesterDto semesterDto) throws BadArgumentException {
         try {
+            Assert.notNull(semesterDto.year(), "Semester year cannot be null");
+            Assert.isTrue(semesterDto.year() >= 1900 , "Invalid semester year");
             Assert.notNull(semesterDto.type(), "Semester type cannot be null");
             Assert.notNull(semesterDto.startDate(), "Semester start date cannot be null");
             Assert.notNull(semesterDto.endDate(), "Semester end date cannot be null");
@@ -58,6 +60,7 @@ public class SemesterService {
 
     public void delete(Semester semester) {
         semester.setAcademicClass(null);
+        semester.setTimeTables(null);
         semesterRepository.delete(semester);
     }
 }

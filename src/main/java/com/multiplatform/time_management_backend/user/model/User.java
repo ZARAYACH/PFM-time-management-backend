@@ -26,7 +26,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.STRING)
 public abstract class User implements UserDetails {
 
     @Id
@@ -35,6 +36,7 @@ public abstract class User implements UserDetails {
 
     @Column(unique = true)
     private String email;
+
     private String password;
     private String firstName;
     private String lastName;
@@ -52,7 +54,7 @@ public abstract class User implements UserDetails {
     @OneToMany(mappedBy = "reservedBy", cascade = CascadeType.ALL)
     private List<Reservation> reservations = new ArrayList<>();
 
-    public User(Long id, String email, String password, String firstName, String lastName, LocalDate birthDate) {
+    public User(Long id, String email,  String password, String firstName, String lastName, LocalDate birthDate) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -91,16 +93,6 @@ public abstract class User implements UserDetails {
         return UserDetails.super.isEnabled();
     }
 
-
-    public Role getRole() {
-        if (this instanceof Admin) {
-            return Role.ADMIN;
-        }
-        if (this instanceof Teacher) {
-            return Role.TEACHER;
-        }
-        return Role.STUDENT;
-    }
     public void addSession(Session session) {
         this.sessions.add(session);
     }
@@ -110,5 +102,15 @@ public abstract class User implements UserDetails {
         @FieldNameConstants.Include STUDENT,
         @FieldNameConstants.Include TEACHER,
         @FieldNameConstants.Include ADMIN;
+    }
+
+    public Role getRole() {
+        if (this instanceof Admin) {
+            return Role.ADMIN;
+        }
+        if (this instanceof Teacher) {
+            return Role.TEACHER;
+        }
+        return Role.STUDENT;
     }
 }
