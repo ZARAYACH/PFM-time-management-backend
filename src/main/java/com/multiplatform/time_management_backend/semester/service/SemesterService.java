@@ -59,8 +59,6 @@ public class SemesterService {
     }
 
     public void delete(Semester semester) {
-        semester.setAcademicClass(null);
-        semester.setTimeTables(null);
         semesterRepository.delete(semester);
     }
 }
