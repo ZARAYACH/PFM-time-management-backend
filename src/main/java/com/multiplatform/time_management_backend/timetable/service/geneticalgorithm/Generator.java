@@ -5,27 +5,18 @@ import lombok.Getter;
 
 import java.util.Random;
 
+@Getter
 public class Generator {
-    @Getter
     Population population;
-    @Getter
     Chromosome fittestChromosome;
     Chromosome secondFittestChromosome;
     Chromosome offSpringChromosome;
     int populationSize;
 
-    private static Generator instance;
     private final Data data;
 
-    private Generator(Data data) {
+    public Generator(Data data) {
         this.data = data;
-    }
-
-    public static Generator getInstance(Data data) {
-        if (instance == null) {
-            instance = new Generator(data);
-        }
-        return instance;
     }
 
     public void initializePopulation(int populationSize) {

@@ -74,7 +74,7 @@ public class SemesterController {
     }
 
     @PostMapping("/{id}/reserve-class-rooms")
-    private List<ReservationDto> reserveClassroomsForSemester(@PathVariable long id, @AuthenticationPrincipal UserDetails userDetails) throws NotFoundException {
+    private List<ReservationDto> reserveClassroomsForSemester(@PathVariable long id, @AuthenticationPrincipal UserDetails userDetails) throws NotFoundException, BadArgumentException {
         Semester semester = semesterService.findById(id);
         User user = userService.findByEmail(userDetails.getUsername());
         return reservationMapper.toReservationDto(reservationService.reserveSemester(semester, user));

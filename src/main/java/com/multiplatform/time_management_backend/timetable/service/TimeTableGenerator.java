@@ -19,6 +19,7 @@ import com.multiplatform.time_management_backend.timetable.service.geneticalgori
 import com.multiplatform.time_management_backend.user.model.Teacher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.time.DayOfWeek;
 import java.util.Arrays;
@@ -40,6 +41,7 @@ public class TimeTableGenerator {
     private final static double mutationRate = 0.5;
 
     public List<TimeTable> generateTimeTables(Semester semester) throws BadArgumentException {
+        validateSemester(semester);
         Map<Group, Map<DayOfWeek, Day>> groupToTimeTableDto = generateSemesterTimeTables(semester);
         Map<Group, TimeTable> timeTablesPerSemester = timeTableRepository.findAllBySemester(semester)
                 .stream().collect(Collectors.toMap(TimeTable::getGroup, o -> o));
@@ -53,9 +55,17 @@ public class TimeTableGenerator {
         return timeTableRepository.saveAllAndFlush(timeTablesPerSemester.values());
     }
 
+    private void validateSemester(Semester semester) throws BadArgumentException {
+        try {
+            Assert.notEmpty(semester.getAcademicClasses(), "Semester AcademicClasses cannot be empty");
+        } catch (IllegalArgumentException e) {
+            throw new BadArgumentException(e);
+        }
+    }
+
     private Map<Group, Map<DayOfWeek, Day>> generateSemesterTimeTables(Semester semester) throws BadArgumentException {
         Data data = createData(semester);
-        Generator gen = Generator.getInstance(data);
+        Generator gen = new Generator(data);
         gen.initializePopulation(populationSize);
 
         gen.getPopulation().calculateAllFitness();
@@ -84,10 +94,9 @@ public class TimeTableGenerator {
 
         for (int i = 0; i < chromosome.getChromosomeLength(); i++) {
             int gene = chromosome.getGene(i);
+            if (gene == -1 ) continue;
             AcademicClass cls = data.getClassByID(gene);
-            if (cls.getGroup() == null) {
-                continue;
-            }
+            if (cls.getId() == -1 ) continue;
             DayOfWeek day = data.getWorkingDays().get((i * chromosome.getData().getDaysPerWeek() / chromosome.getChromosomeLength()) % chromosome.getData().getDaysPerWeek());
             int roomID = Math.toIntExact(data.getRooms()[(i * data.getRooms().length * data.getDaysPerWeek() / chromosome.getChromosomeLength()) % data.getRooms().length].getId());
             int period = i % data.getPeriodsPerDay();
@@ -110,7 +119,7 @@ public class TimeTableGenerator {
         Group[] groups = academicClasses.stream().map(AcademicClass::getGroup).toArray(Group[]::new);
         Teacher[] teachers = academicClasses.stream().map(AcademicClass::getTeacher).toArray(Teacher[]::new);
         ClassRoom[] classRooms = classRoomService.list().toArray(ClassRoom[]::new);
-        Course[] courses = semester.getAcademicClass().stream().map(AcademicClass::getCourse).toArray(Course[]::new);
+        Course[] courses = semester.getAcademicClasses().stream().map(AcademicClass::getCourse).toArray(Course[]::new);
 
         return new Data(semester, groups, teachers, classRooms, courses, 4, getWorkWeekDays(), academicClasses.toArray(AcademicClass[]::new));
     }
