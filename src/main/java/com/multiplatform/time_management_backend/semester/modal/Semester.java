@@ -33,7 +33,7 @@ public class Semester {
     private LocalDate endDate;
 
     @OneToMany(mappedBy = "semester", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AcademicClass> academicClass = new ArrayList<>();
+    private List<AcademicClass> academicClasses = new ArrayList<>();
 
     @OneToMany(mappedBy = "semester", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TimeTable> timeTables = new ArrayList<>();

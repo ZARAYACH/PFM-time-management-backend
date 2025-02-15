@@ -16,8 +16,13 @@ import java.util.List;
 public interface ReservationMapper {
     List<ReservationDto> toReservationDto(List<Reservation> reservationList);
 
-    @Mapping(source = "reservedBy.id", target = "reservedBy")
+    @Mapping(source = "reservedBy.name", target = "reservedBy")
     @Mapping(source = "classroom.id", target = "classroomId")
+    @Mapping(source = "academicClass.group.name", target = "groupName")
+    @Mapping(source = "academicClass.course.name", target = "courseName")
+    @Mapping(source = "academicClass.teacher.name", target = "teacherName")
+    @Mapping(source = "academicClass.teacher.email", target = "teacherEmail")
+    @Mapping(source = "classroom.classNumber", target = "classRoomNumber")
     @Mapping(source = "parentReservation.id", target = "parentReservationId")
     @Mapping(source = "childReservations", target = "childReservationIds")
     @Mapping(source = "academicClass.id", target = "classId")

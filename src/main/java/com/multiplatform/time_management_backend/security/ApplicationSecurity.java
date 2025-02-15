@@ -50,6 +50,7 @@ public class ApplicationSecurity {
                         .requestMatchers("/api/v1/api-docs/**", "/swagger-ui.html", "/swagger-ui/*").permitAll()
 
                         .requestMatchers("/api/v1/reservations/**").hasAnyRole(User.Role.ADMIN.toString(), User.Role.TEACHER.toString())
+                        .requestMatchers(HttpMethod.GET,"/api/v1/class-rooms").hasAnyRole(User.Role.ADMIN.toString(), User.Role.TEACHER.toString())
 
                         .requestMatchers(HttpMethod.GET, "/api/v1/time-tables").hasAnyRole(User.Role.ADMIN.toString(), User.Role.TEACHER.toString(), User.Role.STUDENT.toString())
                         .requestMatchers("/logout").hasAnyRole(User.Role.ADMIN.toString(), User.Role.TEACHER.toString(), User.Role.STUDENT.toString())

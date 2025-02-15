@@ -54,7 +54,7 @@ public abstract class User implements UserDetails {
     @OneToMany(mappedBy = "reservedBy", cascade = CascadeType.ALL)
     private List<Reservation> reservations = new ArrayList<>();
 
-    public User(Long id, String email,  String password, String firstName, String lastName, LocalDate birthDate) {
+    public User(Long id, String email, String password, String firstName, String lastName, LocalDate birthDate) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -112,5 +112,9 @@ public abstract class User implements UserDetails {
             return Role.TEACHER;
         }
         return Role.STUDENT;
+    }
+
+    public String getName() {
+        return this.firstName + " " + this.lastName;
     }
 }

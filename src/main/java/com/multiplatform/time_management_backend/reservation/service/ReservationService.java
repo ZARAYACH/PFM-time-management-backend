@@ -232,11 +232,11 @@ public class ReservationService {
         return reservationRepository.findAllById(ids);
     }
 
-    public List<Reservation> reserveSemester(@NotNull Semester semester, User user) throws NotFoundException {
+    public List<Reservation> reserveSemester(@NotNull Semester semester, User user) throws NotFoundException, BadArgumentException {
         try {
-            Assert.notEmpty(semester.getTimeTables(), "Semester must not be null nor empty");
+            Assert.notEmpty(semester.getTimeTables(), "Semester Timetables are empty");
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e);
+            throw new BadArgumentException(e);
         }
         List<Reservation> reservationList = new ArrayList<>();
         List<TimeTable> timeTables = semester.getTimeTables();
