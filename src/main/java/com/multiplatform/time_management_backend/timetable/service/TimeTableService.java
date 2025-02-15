@@ -4,21 +4,25 @@ import com.multiplatform.time_management_backend.academicclass.modal.AcademicCla
 import com.multiplatform.time_management_backend.academicclass.repository.AcademicClassRepository;
 import com.multiplatform.time_management_backend.exeption.NotFoundException;
 import com.multiplatform.time_management_backend.group.repository.GroupRepository;
+import com.multiplatform.time_management_backend.semester.modal.Semester;
 import com.multiplatform.time_management_backend.semester.repository.SemesterRepository;
 import com.multiplatform.time_management_backend.timetable.modal.Day;
 import com.multiplatform.time_management_backend.timetable.modal.TimeSlot;
 import com.multiplatform.time_management_backend.timetable.modal.TimeTable;
 import com.multiplatform.time_management_backend.timetable.modal.TimeTableDto;
 import com.multiplatform.time_management_backend.timetable.repository.TimeTableRepository;
+import com.multiplatform.time_management_backend.user.model.Teacher;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.time.DayOfWeek;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -78,5 +82,23 @@ public class TimeTableService {
         timeTable.setGroup(null);
         timeTable.setSemester(null);
         timeTableRepository.delete(timeTable);
+    }
+
+    public List<TimeTableDto> getTeacherTimeTableDays(Teacher teacher) {
+        Map<Semester, List<TimeTable>> semesterTimeTables = timeTableRepository.findAll().stream().collect(Collectors.groupingBy(TimeTable::getSemester));
+        Map<Long, AcademicClass> academicClassesByTeacher = academicClassRepository.findAllByTeacher(teacher)
+                .stream().collect(Collectors.toMap(AcademicClass::getId, academicClass -> academicClass));
+        List<TimeTableDto> timeTableDtos = new ArrayList<>();
+        semesterTimeTables.forEach((key, timeTables) -> {
+            TimeTableDto timeTableDto = new TimeTableDto(null, key.getId(), null, TimeTableGenerator.initializeTimeTableDays());
+            timeTables.forEach(timeTable ->
+                    timeTable.getDays().forEach((dayOfWeek, day) -> day.timeSlots().forEach((slot, timeSlot) -> {
+                if (academicClassesByTeacher.get(timeSlot.academicClassId()) != null && academicClassesByTeacher.get(timeSlot.academicClassId()).getTeacher().equals(teacher)) {
+                    timeTableDto.days().get(dayOfWeek).timeSlots().put(slot, timeSlot);
+                }
+            })));
+            timeTableDtos.add(timeTableDto);
+        });
+        return timeTableDtos;
     }
 }

@@ -23,6 +23,10 @@ public class TeacherService {
         return teacherRepository.findById(id).orElseThrow(() ->
                 new NotFoundException("Teacher with id" + id + " Not found"));
     }
+    public Teacher findById(String email) throws NotFoundException {
+        return teacherRepository.findByEmail(email).orElseThrow(() ->
+                new NotFoundException("Teacher with email" + email + " Not found"));
+    }
 
     public List<Teacher> findById(Set<Long> ids) {
         return teacherRepository.findAllById(ids);

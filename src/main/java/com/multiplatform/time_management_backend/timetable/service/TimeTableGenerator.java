@@ -129,7 +129,7 @@ public class TimeTableGenerator {
                 .filter(dayOfWeek -> !dayOfWeek.equals(DayOfWeek.SUNDAY)).toList();
     }
 
-    private Map<DayOfWeek, Day> initializeTimeTableDays() {
+    public static Map<DayOfWeek, Day> initializeTimeTableDays() {
         return Map.of(DayOfWeek.MONDAY, new Day(new HashMap<>()),
                 DayOfWeek.TUESDAY, new Day(new HashMap<>()),
                 DayOfWeek.WEDNESDAY, new Day(new HashMap<>()),
