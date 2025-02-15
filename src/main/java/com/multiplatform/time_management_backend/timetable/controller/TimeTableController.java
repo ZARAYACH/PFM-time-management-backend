@@ -9,8 +9,13 @@ import com.multiplatform.time_management_backend.timetable.modal.TimeTable;
 import com.multiplatform.time_management_backend.timetable.modal.TimeTableDto;
 import com.multiplatform.time_management_backend.timetable.service.TimeTableGenerator;
 import com.multiplatform.time_management_backend.timetable.service.TimeTableService;
+import com.multiplatform.time_management_backend.user.model.Teacher;
+import com.multiplatform.time_management_backend.user.service.TeacherService;
+import com.multiplatform.time_management_backend.user.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +31,8 @@ public class TimeTableController {
     private final TimeTableMapper timeTableMapper;
     private final TimeTableGenerator timeTableGenerator;
     private final SemesterService semesterService;
+    private final UserService userService;
+    private final TeacherService teacherService;
 
     @GetMapping
     private List<TimeTableDto> listTimeTables() {
@@ -61,5 +68,10 @@ public class TimeTableController {
     private List<TimeTableDto> generateTimeTables(@RequestParam Long semesterId) throws BadArgumentException, NotFoundException {
         Semester semester = semesterService.findById(semesterId);
         return timeTableMapper.toTimeTableDto(timeTableGenerator.generateTimeTables(semester));
+    }
+    @GetMapping("/teacher")
+    private List<TimeTableDto> getTeacherTimetable(@AuthenticationPrincipal UserDetails userDetails) throws NotFoundException {
+        Teacher teacher = teacherService.findById(userDetails.getUsername());
+        return timeTableService.getTeacherTimeTableDays(teacher);
     }
 }
