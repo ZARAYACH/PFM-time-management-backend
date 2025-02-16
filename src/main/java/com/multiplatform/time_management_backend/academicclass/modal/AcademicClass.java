@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "academic_class", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"semester_id", "group_id", "teacher_id", "course_id"})
+})
 @Getter
 @Setter
 @NoArgsConstructor
