@@ -16,10 +16,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequestMapping("/api/v1/reservations")
 @RestController
@@ -60,9 +58,9 @@ public class ReservationController {
     }
 
     @DeleteMapping("{ids}")
-    public Map<String, Boolean> deleteReservations(@PathVariable Set<Long> ids,
+    public Map<String, Boolean> deleteReservations(@PathVariable Long[] ids,
                                                   @RequestParam(defaultValue = "false") boolean deleteRecurrences) throws BadArgumentException, NotFoundException {
-        List<Reservation> reservations = reservationService.findById(ids);
+        List<Reservation> reservations = reservationService.findById(Arrays.stream(ids).collect(Collectors.toSet()));
         reservationService.delete(reservations, deleteRecurrences);
         return Collections.singletonMap("deleted", true);
     }

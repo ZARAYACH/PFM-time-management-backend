@@ -11,6 +11,7 @@ import com.multiplatform.time_management_backend.timetable.modal.TimeSlot;
 import com.multiplatform.time_management_backend.timetable.modal.TimeTable;
 import com.multiplatform.time_management_backend.timetable.modal.TimeTableDto;
 import com.multiplatform.time_management_backend.timetable.repository.TimeTableRepository;
+import com.multiplatform.time_management_backend.user.model.Student;
 import com.multiplatform.time_management_backend.user.model.Teacher;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -84,13 +85,13 @@ public class TimeTableService {
         timeTableRepository.delete(timeTable);
     }
 
-    public List<TimeTableDto> getTeacherTimeTableDays(Teacher teacher) {
+    public List<TimeTableDto> getTeacherTimeTables(Teacher teacher) {
         Map<Semester, List<TimeTable>> semesterTimeTables = timeTableRepository.findAll().stream().collect(Collectors.groupingBy(TimeTable::getSemester));
         Map<Long, AcademicClass> academicClassesByTeacher = academicClassRepository.findAllByTeacher(teacher)
                 .stream().collect(Collectors.toMap(AcademicClass::getId, academicClass -> academicClass));
         List<TimeTableDto> timeTableDtos = new ArrayList<>();
         semesterTimeTables.forEach((key, timeTables) -> {
-            TimeTableDto timeTableDto = new TimeTableDto(null, key.getId(), null, TimeTableGenerator.initializeTimeTableDays());
+            TimeTableDto timeTableDto = new TimeTableDto(null, key.getId(), null, null,TimeTableGenerator.initializeTimeTableDays());
             timeTables.forEach(timeTable ->
                     timeTable.getDays().forEach((dayOfWeek, day) -> day.timeSlots().forEach((slot, timeSlot) -> {
                 if (academicClassesByTeacher.get(timeSlot.academicClassId()) != null && academicClassesByTeacher.get(timeSlot.academicClassId()).getTeacher().equals(teacher)) {
@@ -100,5 +101,9 @@ public class TimeTableService {
             timeTableDtos.add(timeTableDto);
         });
         return timeTableDtos;
+    }
+
+    public List<TimeTable> getStudentTimeTables(Student student) {
+        return timeTableRepository.findAllByGroup(student.getGroup());
     }
 }
