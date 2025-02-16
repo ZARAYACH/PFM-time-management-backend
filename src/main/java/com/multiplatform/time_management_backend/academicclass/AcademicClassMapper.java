@@ -15,9 +15,12 @@ import java.util.List;
 public interface AcademicClassMapper {
 
     @Mapping(source = "group.id", target = "groupId")
+    @Mapping(source = "group.name", target = "groupName")
     @Mapping(source = "semester.id", target = "semesterId")
     @Mapping(source = "course.id", target = "courseId")
+    @Mapping(source = "course.name", target = "courseName")
     @Mapping(source = "teacher.id", target = "teacherId")
+    @Mapping(source = "teacher.name", target = "teacherName")
     AcademicClassDto toAcademicClassDto(AcademicClass academicSemesters);
 
     List<AcademicClassDto> toAcademicClassDto(List<AcademicClass> academicClasses);

@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import org.w3c.dom.ls.LSException;
 
 import java.util.List;
 import java.util.Map;
@@ -81,7 +80,7 @@ public class TimeTableController {
 
     @GetMapping("/student")
     private List<TimeTableDto> getStudentTimetables(@AuthenticationPrincipal UserDetails userDetails) throws NotFoundException {
-        Student student = studentService.findById(userDetails.getUsername());
+        Student student = studentService.findByEmail(userDetails.getUsername());
         return timeTableMapper.toTimeTableDto(timeTableService.getStudentTimeTables(student));
     }
     @GetMapping("/timeslots")

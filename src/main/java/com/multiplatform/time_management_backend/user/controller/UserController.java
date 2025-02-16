@@ -5,9 +5,13 @@ import com.multiplatform.time_management_backend.exeption.NotFoundException;
 import com.multiplatform.time_management_backend.user.UserMapper;
 import com.multiplatform.time_management_backend.user.model.User;
 import com.multiplatform.time_management_backend.user.model.dto.UserDto;
+import com.multiplatform.time_management_backend.user.service.StudentService;
 import com.multiplatform.time_management_backend.user.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -22,10 +26,19 @@ public class UserController {
 
     private final UserService userService;
     private final UserMapper userMapper;
+    private final StudentService studentService;
 
     @GetMapping
     private List<UserDto> listUsers() {
         return userMapper.toUser(userService.list());
+    }
+
+    @GetMapping("/me")
+    private UserDto getMe(@AuthenticationPrincipal UserDetails userDetails) throws NotFoundException {
+        if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_" + User.Role.STUDENT))) {
+            return userMapper.toUserDto(studentService.findByEmail(userDetails.getUsername()));
+        }
+        return userMapper.toUserDto(userService.findByEmail(userDetails.getUsername()));
     }
 
     @GetMapping("/{id}")

@@ -9,10 +9,13 @@ import com.multiplatform.time_management_backend.exeption.BadArgumentException;
 import com.multiplatform.time_management_backend.exeption.NotFoundException;
 import com.multiplatform.time_management_backend.group.repository.GroupRepository;
 import com.multiplatform.time_management_backend.semester.repository.SemesterRepository;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.Set;
 
@@ -41,7 +44,11 @@ public class AcademicClassService {
 
     public AcademicClass create(AcademicClassDto academicClassDto) throws NotFoundException, BadArgumentException {
         AcademicClass academicClass = validateAcademicClassDtoAndCreate(academicClassDto);
-        return academicClassRepository.save(academicClass);
+        try {
+            return academicClassRepository.save(academicClass);
+        } catch (DataIntegrityViolationException e) {
+            throw new BadArgumentException("Class already exists");
+        }
     }
 
     private AcademicClass validateAcademicClassDtoAndCreate(AcademicClassDto academicClassDto) throws BadArgumentException {
