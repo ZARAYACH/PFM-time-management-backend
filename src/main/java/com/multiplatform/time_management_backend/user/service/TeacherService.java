@@ -23,7 +23,7 @@ public class TeacherService {
         return teacherRepository.findById(id).orElseThrow(() ->
                 new NotFoundException("Teacher with id" + id + " Not found"));
     }
-    public Teacher findById(String email) throws NotFoundException {
+    public Teacher findByEmail(String email) throws NotFoundException {
         return teacherRepository.findByEmail(email).orElseThrow(() ->
                 new NotFoundException("Teacher with email" + email + " Not found"));
     }

@@ -14,7 +14,8 @@ public record UserDto(
         String firstName,
         String lastName,
         LocalDate birthDate,
-        User.Role role
+        User.Role role,
+        String groupName
 ) {
     public record PostUserDto(
             Long id,

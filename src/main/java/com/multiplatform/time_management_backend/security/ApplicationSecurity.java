@@ -46,14 +46,12 @@ public class ApplicationSecurity {
                         .requestMatchers(HttpMethod.POST, "/login", "/logout").permitAll()
                         .requestMatchers(HttpMethod.POST, "/signup", "/api/v1/tokens").permitAll()
                         .requestMatchers(HttpMethod.GET, "/.well-known/jwks.json").permitAll()
-
                         .requestMatchers("/api/v1/api-docs/**", "/swagger-ui.html", "/swagger-ui/*").permitAll()
-
                         .requestMatchers("/api/v1/reservations/**").hasAnyRole(User.Role.ADMIN.toString(), User.Role.TEACHER.toString())
-                        .requestMatchers(HttpMethod.GET,"/api/v1/class-rooms","/api/v1/time-tables" ).hasAnyRole(User.Role.ADMIN.toString(), User.Role.TEACHER.toString())
-
-                        .requestMatchers(HttpMethod.GET, "/api/v1/time-tables", "/api/v1/semesters").hasAnyRole(User.Role.ADMIN.toString(), User.Role.TEACHER.toString(), User.Role.STUDENT.toString())
+                        .requestMatchers(HttpMethod.GET,"/api/v1/class-rooms","/api/v1/time-tables").hasAnyRole(User.Role.ADMIN.toString(), User.Role.TEACHER.toString())
+                        .requestMatchers(HttpMethod.GET, "/api/v1/time-tables", "/api/v1/semesters","/api/v1/time-tables/timeslots").hasAnyRole(User.Role.ADMIN.toString(), User.Role.TEACHER.toString(), User.Role.STUDENT.toString())
                         .requestMatchers(HttpMethod.GET, "/api/v1/time-tables/teacher").hasAnyRole(User.Role.TEACHER.toString())
+                        .requestMatchers(HttpMethod.GET, "/api/v1/time-tables/student").hasAnyRole(User.Role.STUDENT.toString())
                         .requestMatchers("/logout").hasAnyRole(User.Role.ADMIN.toString(), User.Role.TEACHER.toString(), User.Role.STUDENT.toString())
                         .anyRequest().hasRole(User.Role.ADMIN.toString()))
 

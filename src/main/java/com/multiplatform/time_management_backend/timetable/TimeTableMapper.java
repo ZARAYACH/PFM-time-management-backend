@@ -15,6 +15,7 @@ import java.util.List;
 public interface TimeTableMapper {
     @Mapping(source = "semester.id", target = "semesterId")
     @Mapping(source = "group.id", target = "groupId")
+    @Mapping(source = "group.name", target = "groupName")
     TimeTableDto toTimeTableDto(TimeTable timeTable);
 
     List<TimeTableDto> toTimeTableDto(List<TimeTable> timeTables);

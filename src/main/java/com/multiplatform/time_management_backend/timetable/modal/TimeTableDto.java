@@ -15,6 +15,7 @@ public record TimeTableDto(
         @NotNull Long id,
         @NotNull Long semesterId,
         @NotNull Long groupId,
+        @NotNull String groupName,
         @NotNull Map<DayOfWeek, Day> days
 ) {
 }

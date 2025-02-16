@@ -1,9 +1,14 @@
 package com.multiplatform.time_management_backend.timetable.modal;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Getter
@@ -23,5 +28,19 @@ public enum Slot {
             case 3 -> AFTERNOON_SECOND;
             default -> null;
         };
+    }
+
+    public static List<SlotDto> getDto() {
+        return Arrays.stream(Slot.values()).map(slot -> new SlotDto(slot,
+                slot.startTime.format(DateTimeFormatter.ISO_LOCAL_TIME),
+                slot.endTime.format(DateTimeFormatter.ISO_LOCAL_TIME))).collect(Collectors.toList());
+    }
+
+    public record SlotDto(
+           @NotNull Slot slot,
+           @NotNull String startTime,
+           @NotNull String endTime
+    ) {
+
     }
 }
