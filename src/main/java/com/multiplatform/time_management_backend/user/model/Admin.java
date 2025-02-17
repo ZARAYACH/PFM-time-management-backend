@@ -12,7 +12,7 @@ import java.time.LocalDate;
 public class Admin extends User {
 
     public Admin(User user) {
-        super(null, user.getEmail(), user.getPassword(), user.getFirstName(), user.getLastName(), user.getBirthDate(), user.getCreatedAt(), user.getUpdatedAt(), user.getSessions(), user.getReservations());
+        super(null, user.getEmail(), user.getPassword(), user.getFirstName(), user.getLastName(), user.getBirthDate(), user.getCreatedAt(), user.getUpdatedAt(), null, null);
     }
 
     public Admin(String email, String password, String firstName, String lastName, LocalDate birthDate) {

@@ -19,7 +19,7 @@ public class Teacher extends User {
     private List<AcademicClass> academicClasses = new ArrayList<>();
 
     public Teacher(User user) {
-        super(null, user.getEmail(), user.getPassword(), user.getFirstName(), user.getLastName(), user.getBirthDate(), user.getCreatedAt(), user.getUpdatedAt(), user.getSessions(), user.getReservations());
+        super(null, user.getEmail(), user.getPassword(), user.getFirstName(), user.getLastName(), user.getBirthDate(), user.getCreatedAt(), user.getUpdatedAt(), null, null);
     }
 
     //Please make sure that the password is encrypted before it is passed in here
