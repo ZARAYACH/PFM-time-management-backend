@@ -48,10 +48,10 @@ public abstract class User implements UserDetails {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Session> sessions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "reservedBy", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "reservedBy", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reservation> reservations = new ArrayList<>();
 
     public User(Long id, String email, String password, String firstName, String lastName, LocalDate birthDate) {
