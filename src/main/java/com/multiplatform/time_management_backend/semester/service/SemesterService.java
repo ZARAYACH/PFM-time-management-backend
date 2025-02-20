@@ -39,11 +39,16 @@ public class SemesterService {
     private Semester validateSemesterDtoAndCreate(SemesterDto semesterDto) throws BadArgumentException {
         try {
             Assert.notNull(semesterDto.year(), "Semester year cannot be null");
-            Assert.isTrue(semesterDto.year() >= 1900 , "Invalid semester year");
+            Assert.isTrue(semesterDto.year() >= 1900, "Invalid semester year");
             Assert.notNull(semesterDto.type(), "Semester type cannot be null");
             Assert.notNull(semesterDto.startDate(), "Semester start date cannot be null");
             Assert.notNull(semesterDto.endDate(), "Semester end date cannot be null");
             Assert.isTrue(semesterDto.startDate().isBefore(semesterDto.endDate()), "Start date cannot be before end date");
+            boolean exists = semesterRepository.existsByStartDateBeforeAndEndDateAfter(
+                    semesterDto.endDate(), semesterDto.startDate());
+            if (exists) {
+                throw new BadArgumentException("There is already a semester within the given period.");
+            }
         } catch (IllegalArgumentException e) {
             throw new BadArgumentException(e);
         }
