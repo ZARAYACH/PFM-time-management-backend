@@ -1,18 +1,56 @@
 services:
-
   pfmBackend:
     build:
+      context: ../
       dockerfile: Dockerfile
-      context: ./../
-
+    environment:
+      - DB_HOST=pfmtimemanagementdb.eastus.cloudapp.azure.com
+      - DB_PORT=3306
+      - DB_USER=backend
+      - DB_PASSWORD=
+      - PORT=80
+      - APP_SECURITY_JWT_KEY_PAIRS_PATH=/home/pfmbackend/keys
+      - REDIS_HOST=redisCache
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=
+    volumes:
+      - appKeyPairs:/home/pfmbackend/keys
   redisCache:
     image: redis:6.2-alpine
     restart: always
-    ports:
-      - '6379:6379'
-    command: redis-server --save 20 1 --loglevel warning --requirepass cCf75SWA8UTxzx1kT1V6O4RX5ynZo6
+    command: redis-server --save 20 1 --loglevel warning --requirepass
     volumes:
       - cache:/data
+  webserver:
+    image: nginx:1.27.3-alpine
+    ports:
+      - 80:80
+      - 443:443
+    restart: always
+    volumes:
+      - ./nginx/conf/:/etc/nginx/conf.d/:ro
+      - ./certbot/conf/:/etc/certbot/conf:ro
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
+      - ./certbot/conf/:/etc/letsencrypt/:rw
+#  mysql:
+#    image: mysql:9.2.0
+#    container_name: db
+#    environment:
+#      - MYSQL_ROOT_PASSWORD=
+#      - MYSQL_USER=backend
+#      - MYSQL_PASSWORD=
+#      - MYSQL_DATABASE=pfm_time_management
+#    volumes:
+#      - ./data:/docker-entrypoint-initdb.d
+#      - dbVolume:/var/lib/mysql
+
 volumes:
   cache:
+    driver: local
+  appKeyPairs:
+    driver: local
+  dbVolume:
     driver: local

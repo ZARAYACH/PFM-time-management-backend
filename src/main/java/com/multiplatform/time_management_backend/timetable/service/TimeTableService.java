@@ -72,7 +72,8 @@ public class TimeTableService {
     private void validateDays(Long groupId, @NotNull Map<DayOfWeek, Day> days) throws NotFoundException {
         for (Day day : days.values()) {
             for (TimeSlot slot : day.timeSlots().values()) {
-                AcademicClass academicClass = academicClassRepository.findById(slot.academicClassId()).orElseThrow(() -> new NotFoundException("academic class not found"));
+                AcademicClass academicClass = academicClassRepository.findById(slot.academicClassId())
+                        .orElseThrow(() -> new NotFoundException("academic class " + slot.academicClassId() + " not found"));
                 Assert.isTrue(academicClass.getGroup().getId().equals(groupId), "Academic class is not for group" + groupId);
             }
         }
@@ -91,13 +92,13 @@ public class TimeTableService {
                 .stream().collect(Collectors.toMap(AcademicClass::getId, academicClass -> academicClass));
         List<TimeTableDto> timeTableDtos = new ArrayList<>();
         semesterTimeTables.forEach((key, timeTables) -> {
-            TimeTableDto timeTableDto = new TimeTableDto(null, key.getId(), null, null,TimeTableGenerator.initializeTimeTableDays());
+            TimeTableDto timeTableDto = new TimeTableDto(null, key.getId(), null, null, TimeTableGenerator.initializeTimeTableDays());
             timeTables.forEach(timeTable ->
                     timeTable.getDays().forEach((dayOfWeek, day) -> day.timeSlots().forEach((slot, timeSlot) -> {
-                if (academicClassesByTeacher.get(timeSlot.academicClassId()) != null && academicClassesByTeacher.get(timeSlot.academicClassId()).getTeacher().equals(teacher)) {
-                    timeTableDto.days().get(dayOfWeek).timeSlots().put(slot, timeSlot);
-                }
-            })));
+                        if (academicClassesByTeacher.get(timeSlot.academicClassId()) != null && academicClassesByTeacher.get(timeSlot.academicClassId()).getTeacher().equals(teacher)) {
+                            timeTableDto.days().get(dayOfWeek).timeSlots().put(slot, timeSlot);
+                        }
+                    })));
             timeTableDtos.add(timeTableDto);
         });
         return timeTableDtos;
