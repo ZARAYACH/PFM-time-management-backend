@@ -107,4 +107,8 @@ public class TimeTableService {
     public List<TimeTable> getStudentTimeTables(Student student) {
         return timeTableRepository.findAllByGroup(student.getGroup());
     }
+
+    public List<TimeTable> findTimeTablesBySemester(Semester semester) {
+        return timeTableRepository.findAllBySemester(semester);
+    }
 }
