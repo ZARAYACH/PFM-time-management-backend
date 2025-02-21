@@ -37,10 +37,13 @@ public class TimeTableController {
     private final TeacherService teacherService;
 
     @GetMapping
-    private List<TimeTableDto> listTimeTables() {
+    private List<TimeTableDto> listTimeTables(@RequestParam(required = false) Long semesterId) throws NotFoundException {
+        if (semesterId != null) {
+            Semester semester = semesterService.findById(semesterId);
+            return timeTableMapper.toTimeTableDto(timeTableService.findTimeTablesBySemester(semester));
+        }
         return timeTableMapper.toTimeTableDto(timeTableService.list());
     }
-
 
     @GetMapping("/{id}")
     private TimeTableDto findTimeTableById(@PathVariable long id) throws NotFoundException {

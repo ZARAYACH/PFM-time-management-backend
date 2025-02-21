@@ -24,4 +24,7 @@ public interface UserMapper {
     List<UserDto> toUser(List<User> users);
 
     List<TeacherDto> toTeacherDto(List<Teacher> teachers);
+
+    TeacherDto toTeacherDto(Teacher teacher);
+
 }

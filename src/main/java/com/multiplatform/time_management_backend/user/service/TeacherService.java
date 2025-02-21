@@ -3,6 +3,7 @@ package com.multiplatform.time_management_backend.user.service;
 import com.multiplatform.time_management_backend.department.repository.TeacherRepository;
 import com.multiplatform.time_management_backend.exeption.NotFoundException;
 import com.multiplatform.time_management_backend.user.model.Teacher;
+import com.multiplatform.time_management_backend.user.model.dto.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ public class TeacherService {
         return teacherRepository.findById(id).orElseThrow(() ->
                 new NotFoundException("Teacher with id" + id + " Not found"));
     }
+
     public Teacher findByEmail(String email) throws NotFoundException {
         return teacherRepository.findByEmail(email).orElseThrow(() ->
                 new NotFoundException("Teacher with email" + email + " Not found"));
@@ -31,4 +33,12 @@ public class TeacherService {
     public List<Teacher> findById(Set<Long> ids) {
         return teacherRepository.findAllById(ids);
     }
+
+    public Teacher modify(Teacher teacher, UserDto.PostUserDto userDto) {
+        teacher.setBirthDate(userDto.birthDate());
+        teacher.setFirstName(userDto.firstName());
+        teacher.setLastName(userDto.lastName());
+        return teacherRepository.save(teacher);
+    }
+
 }
