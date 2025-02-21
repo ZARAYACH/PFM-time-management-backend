@@ -45,6 +45,7 @@ spring.data.redis.password=your_redis_password
 - There is a **session tied to the tokens**, allowing users to remain logged in until the session expires.
 - A **sliding window mechanism** is implemented: each time a **refresh token** is used, the session is extended for another **7 days**.
 - Users can log out using the `POST /logout` endpoint, which invalidates the session.
+- Default admin user : username : admin@email.com, password : 123Aze456789@
 
 ## API Endpoints
 ### Authentication
