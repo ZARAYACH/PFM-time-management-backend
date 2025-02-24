@@ -57,6 +57,7 @@ public class ApplicationSecurity {
                         .requestMatchers(HttpMethod.GET, "/api/v1/time-tables/teacher").hasAnyRole(User.Role.TEACHER.toString())
                         .requestMatchers(HttpMethod.GET, "/api/v1/time-tables/student").hasAnyRole(User.Role.STUDENT.toString())
                         .requestMatchers("/logout").hasAnyRole(User.Role.ADMIN.toString(), User.Role.TEACHER.toString(), User.Role.STUDENT.toString())
+                        .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().hasRole(User.Role.ADMIN.toString()))
 
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
