@@ -12,8 +12,22 @@ spring.jpa.show-sql=true
 spring.sql.init.mode=always
 spring.jpa.defer-datasource-initialization=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
-
+spring.datasource.tomcat.test-on-borrow=true
+spring.datasource.tomcat.test-while-idle=true
+spring.datasource.tomcat.test-on-return=true
+spring.datasource.tomcat.test-on-connect=true
+spring.datasource.tomcat.validation-query=SELECT 1
+spring.datasource.hikari.initialization-fail-timeout=0
+spring.datasource.hikari.leak-detection-threshold=15000
+spring.datasource.hikari.minimum-idle=1
+spring.datasource.hikari.maximum-pool-size=10
+spring.datasource.hikari.idle-timeout=600000
+spring.datasource.hikari.max-lifetime=1800000
+spring.datasource.hikari.validation-timeout=5000
+spring.datasource.hikari.connection-test-query=SELECT 1
+spring.datasource.hikari.keepalive-time=300000000
 app.security.jwt.access-token-validity-in-seconds=900
+
 #7 days
 app.security.jwt.refresh-token-validity-in-seconds=604800
 app.security.jwt.key-pairs-path=/home/timeManagement/keys
